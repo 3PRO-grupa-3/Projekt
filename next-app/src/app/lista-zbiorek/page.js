@@ -1,9 +1,9 @@
 'use client'
+import { useUser } from '@/hooks/useUser'
 import React from 'react'
-import ConfirmationAlert from '../basicComponents/ConfirmationAlert'
-import { Button } from '@/components/ui/button'
-import { Trash2 } from 'lucide-react'
 
 export default function page() {
-  return <div>test</div>
+  const { user, logout } = useUser()
+
+  return <div>LISTA ZBIOREK, logged user: {user?.id}</div>
 }
