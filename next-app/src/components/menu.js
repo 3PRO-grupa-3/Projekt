@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { Bell, Home, Megaphone } from 'lucide-react'
+import { Bell, Home, Megaphone, User } from 'lucide-react'
 import Link from 'next/link'
 import { ModeToggle } from './ModeToggle'
 import { Button } from './ui/button'
@@ -34,6 +34,11 @@ export default function Menu() {
       url: '/problemy',
       icon: Megaphone,
     },
+    {
+      title: 'Mój profil',
+      url: '/moj-profil',
+      icon: User,
+    }
   ]
 
   return (
