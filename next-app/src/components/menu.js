@@ -33,9 +33,8 @@ export default function Menu() {
       title: 'Zgłoszone problemy',
       url: '/problemy',
       icon: Megaphone,
-    },
+    }
   ]
-
   return (
     <Sidebar>
       <SidebarContent className='flex flex-column justify-start items-center p-4'>
