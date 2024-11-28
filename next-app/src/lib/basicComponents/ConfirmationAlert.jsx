@@ -1,5 +1,5 @@
-'use client'
-import { useState } from 'react'
+"use client";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,10 +10,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import { useMutation } from '@tanstack/react-query'
-import { toast } from '@/hooks/use-toast'
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "@/hooks/use-toast";
+import SpinnerLoading from "./SpinnerLoading";
 
 export default function ConfirmationAlert({
   message,
@@ -26,31 +27,31 @@ export default function ConfirmationAlert({
   onSuccesCustomFunc,
   parentDialogCloser,
 }) {
-  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false)
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
   const propMutation = useMutation({
     mutationFn: async () => {
-      await mutationFn()
+      await mutationFn();
     },
     onError: () => {
       // console.log('Error occurred:', error)
-      setIsAlertDialogOpen(false)
-      if (parentDialogCloser) parentDialogCloser()
-      toast(toastError)
+      setIsAlertDialogOpen(false);
+      if (parentDialogCloser) parentDialogCloser();
+      toast(toastError);
     },
     onSuccess: () => {
       // console.log('mutation worked')
-      setIsAlertDialogOpen(false)
-      if (parentDialogCloser) parentDialogCloser()
-      toast(toastSucces)
-      if (onSuccesCustomFunc) onSuccesCustomFunc()
+      setIsAlertDialogOpen(false);
+      if (parentDialogCloser) parentDialogCloser();
+      toast(toastSucces);
+      if (onSuccesCustomFunc) onSuccesCustomFunc();
     },
-  })
+  });
 
   const handleConfirm = async () => {
-    await propMutation.mutateAsync()
-    setIsAlertDialogOpen(false)
-  }
+    await propMutation.mutateAsync();
+    setIsAlertDialogOpen(false);
+  };
 
   return (
     <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
@@ -61,10 +62,12 @@ export default function ConfirmationAlert({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setIsAlertDialogOpen(false)}>{cancelText}</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => setIsAlertDialogOpen(false)}>
+            {cancelText}
+          </AlertDialogCancel>
           {propMutation.isPending ? (
             <Button disabled={propMutation.isPending}>
-              <MiniLoading />
+              <SpinnerLoading />
             </Button>
           ) : (
             <div onClick={handleConfirm}>{triggerElement}</div>
@@ -72,5 +75,5 @@ export default function ConfirmationAlert({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
