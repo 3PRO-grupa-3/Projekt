@@ -39,7 +39,7 @@ export default function Page() {
       {data && data.map((zbiorki)=>(
         // {zbiorki.status==true && (
         <Link key={zbiorki.id} href={`lista-zbiorek/${zbiorki.Tytul}`}>
-          <Card>
+          <Card >
           <CardHeader>
             <CardTitle>{zbiorki.Tytul}</CardTitle>
             <CardDescription>{zbiorki.data_utworzenia}</CardDescription>
