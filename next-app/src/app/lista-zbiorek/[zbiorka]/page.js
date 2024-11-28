@@ -11,6 +11,9 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 export default function Page({params}){
 
@@ -73,16 +76,45 @@ export default function Page({params}){
 
         return(
             <div>
-              <Card >
-                <CardHeader>
-                  <CardTitle>{daneZbiorka.Tytul}</CardTitle>
-                  <CardDescription>{daneZbiorka.data_zakonczenia}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <h1>{daneZbiorka.opis}</h1>
-                  <p>{daneZbiorka.cena_na_ucznia}</p>
-                </CardContent>
-              </Card>
+              <div>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{daneZbiorka.Tytul}</CardTitle>
+                    <CardDescription>{daneZbiorka.data_zakonczenia}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <h1>{daneZbiorka.opis}</h1>
+                    <p>{daneZbiorka.cena_na_ucznia}</p>
+                  </CardContent>
+                </Card>
+              </div>
+              <div>
+                <Button>ZGLOS PROBLEM</Button>
+                <Button>EDYTUJ SZCZEGOLY</Button>
+                <Button>ZAKONCZ/ZAKONCZONA</Button>
+                <Button>PRZYPOMNIJ O ZBIORCE</Button>
+              </div>  
+              <div>
+                <div>
+                  <h1>Lista Uczniów</h1>
+                  <Input ></Input>
+                  <Button>Dodaj Ucznia</Button>
+                </div>
+                {daneUczen && daneUczen.map((uczen)=>(
+                  <Card>
+                    <CardHeader>
+                      <CardTitle></CardTitle>
+                      <CardDescription>Card Description</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <p>Card Content</p>
+                    </CardContent>
+                    <CardFooter>
+                      <p>Card Footer</p>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
             </div>
         )
 }
