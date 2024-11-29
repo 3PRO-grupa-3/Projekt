@@ -60,7 +60,7 @@ export default function Page({ params }) {
           sort: "-id",
         });
         setDaneUczen(record);
-        console.log(record);
+        console.log("uczniowie (id)",record);
       } catch (error) {
         console.error("Error fetching uczniowe:", error);
       }
@@ -75,7 +75,7 @@ export default function Page({ params }) {
           sort: "-tresc",
         });
         setDaneKomentarz(record);
-        console.log(record);
+        console.log("komentarze: ",record);
       } catch (error) {
         console.error("Error fetching komentarze:", error);
       }
@@ -90,7 +90,7 @@ export default function Page({ params }) {
           sort: "-id",
         });
         setDaneWplaty(record);
-        console.log(record);
+        console.log("Wplaty: ",record);
       } catch (error) {
         console.error("Error fetching wplaty:", error);
       }
@@ -105,7 +105,7 @@ export default function Page({ params }) {
           sort: "-id",
         });
         setDaneUzytkownik(record);
-        console.log("Users data:", record);
+        console.log("Users: ", record);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -124,6 +124,12 @@ export default function Page({ params }) {
   const dodajUcznia = () => {
     console.log("tu ma byc funkjca do dodania ucznia do zbiorki");
   };
+
+  const usunKomentarz = () => {
+    console.log("tu ma byc funkjca do usuniecia komentarza");
+  };
+
+
 
   return (
     <div>
@@ -194,21 +200,76 @@ export default function Page({ params }) {
             description: "",
           }}
         />
+          {daneUczen &&
+            daneUczen.map((tenUczen) => {
+              if (tenUczen!=null && daneZbiorka!=null && tenUczen.id_zbiorki == daneZbiorka.id) {
+                const user = daneUzytkownik ? daneUzytkownik.find((user) => user.id == tenUczen.id_ucznia) : null;                
+                const wplata = daneWplaty ? daneWplaty.find((payment) => payment.id_ucznia == tenUczen.id_ucznia && payment.id_zbiorki === daneZbiorka.id) : null;
 
-        {daneUczen.id_zbiorki==daneZbiorka.id ? (
-        <Card>
-          <CardHeader>
-          {daneUzytkownik.includes(daneUczen.id_zbiorki)&& <CardTitle>test</CardTitle>}
-            <CardDescription>{daneZbiorka.data_zakonczenia}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <h1>{daneZbiorka.opis}</h1>
-            <p>{daneZbiorka.cena_na_ucznia}</p>
+                return (
+                  <Card key={tenUczen.id}>
+                    <CardHeader>
+                      <CardTitle>{user ? user.imie + " " + user.nazwisko : null}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {wplata ? (
+                        <div>
+                          <p>Data Zapłaty: {wplata.data_utworzenia}</p>
+                          <p>Status płatności: {wplata.wplacono ? "Zapłacono" : "Nie zapłacono"}</p>
+                          {wplata.wplacono && (
+                            <p>Metoda płatności: {wplata.typ_platnosci}</p>
+                          )}
+                        </div>
+                      ) : (
+                        <p>Nie zapłacono</p>
+                      )}
           </CardContent>
         </Card>
-      ) : (
-        <p>Loading...</p>
-      )}
+      );
+    }
+    return null;
+  })}
+
+{daneKomentarz && daneKomentarz.map((komentarz) => {
+  if (komentarz && daneZbiorka && komentarz.id_zbiorki === daneZbiorka.id) {
+    const user = daneUzytkownik ? daneUzytkownik.find((user) => user.id === komentarz.id_autora) : null;
+    const komentarZmienna = komentarz ? daneKomentarz.find((kom) => kom.id_autora === komentarz.id_autora && kom.id_zbiorki === daneZbiorka.id) : null;
+
+    return (
+      <Card key={komentarz.id}>
+        <CardHeader>
+          <CardTitle>{user ? user.imie + " " + user.nazwisko : "Brak autora"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {komentarZmienna ? (
+            <div>
+              <p>Data komentarza: {komentarZmienna.data_utworzenia}</p>
+              <p>{komentarZmienna.tresc}</p>
+              <ConfirmationAlert
+                message={"Czy na pewno chcesz usunąć ten komentarz?"}
+                cancelText={"Powrót"}
+                triggerElement={<Button>Usuń komentarz</Button>}
+                mutationFn={usunKomentarz}
+                toastError={{
+                  variant: "destructive",
+                  title: "Nie udało się wykonać polecenia.",
+                  description: "Spróbuj ponownie później.",
+                }}
+                toastSucces={{
+                  title: "Komentarz został usunięty",
+                  description: "",
+                }}
+              />
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+    );
+  }
+  return null;
+})}
+
+
         </div>
     </div>
   );
