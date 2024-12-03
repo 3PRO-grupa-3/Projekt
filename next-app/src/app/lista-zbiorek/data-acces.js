@@ -26,3 +26,12 @@ export const fetchWplaty = async () => {
 export const fetchUsers = async () => {
   return await pocketbase.collection("users").getFullList({ sort: "-id" });
 };
+
+export async function zakonczZbiorkeFinal(zbiorkaID) {
+  try {
+    const data = { status: false };
+    await pocketbase.collection("Zbiorki").update(zbiorkaID, data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
