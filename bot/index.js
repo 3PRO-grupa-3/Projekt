@@ -16,18 +16,13 @@ client.on("ready", () => {
 
 })
 
-client.on("messageCreate", (msg) => {
-
-    if (msg.author.bot) return;
-
-    console.log(`Otrzymano wiadomość:  ${msg.content} w kanale ${msg.channel.name}`); 
-
-
-    if (msg.content === "dzialasz?") {
-
-    msg.reply("dzialam");
-
- };
+client.on("interactionCreate", async (interaction) => {
+    if(interaction.isCommand()){
+        if(interaction.commandName === "ping"){
+            const textReceived = interaction.options.getString("text")
+            interaction.reply({content: `${textReceived}`})
+        }
+    }
 })
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.TOKEN);
