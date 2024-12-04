@@ -35,3 +35,21 @@ export async function zakonczZbiorkeFinal(zbiorkaID) {
     throw new Error(error);
   }
 }
+
+export async function editZbiorkaFinal(zbiorkaID,editData) {
+   try {
+    const data = {
+      Tytul: editData.tytul,
+      opis: editData.opis,
+      cel: editData.cel,
+      tryb: [
+          editData.typZbiorki
+      ],
+      cena_na_ucznia: editData.cena_na_ucznia,
+  };
+  
+    await pocketbase.collection('Zbiorki').update(zbiorkaID, data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
