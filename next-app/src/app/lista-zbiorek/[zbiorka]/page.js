@@ -21,6 +21,7 @@ export default function Page({ params }) {
     queryFn: () => fetchZbiorkaByTitle(zbiorkaParams.zbiorka),
   })
 
+  //dodac bardziej unikalne query key do useQuery
   const { data: daneUczen } = useQuery({
     queryKey: ['uczniowie'],
     queryFn: fetchUczen,

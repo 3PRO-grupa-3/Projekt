@@ -14,7 +14,6 @@ import Link from 'next/link';
 import { fetchZbiorki } from './data-acces';
 
 export default function Page() {
-  // Use React Query for data fetching
   const { data, isLoading, error } = useQuery({
     queryKey: ['zbiorki'],
     queryFn: fetchZbiorki,

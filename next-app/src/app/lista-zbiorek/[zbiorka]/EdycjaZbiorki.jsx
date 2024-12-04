@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import {
   Dialog,
@@ -13,27 +13,45 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from '@radix-ui/react-label'
 import { Input } from '@/components/ui/input'
+import { editZbiorkaFinal } from '../data-acces'
+import { useRouter } from 'next/navigation';
 
-export default function EdycjaZbiorki({ daneZbiorka }) {
+export default function EdycjaZbiorki({ daneZbiorka,mutation }) {
   const [editZbiorka, setEditZbiorka] = useState({
     tytul: '',
     opis: '',
     cel: '',
     cena_na_ucznia: '',
     typZbiorki: '',
-  })
+  });
+
+  const router = useRouter()
+
+  useEffect(() => {
+    if (daneZbiorka.tryb[0] === 'prywatna') {
+      setEditZbiorka((prev) => ({
+        ...prev,
+        typZbiorki: 'prywatna',
+      }));
+    } else if (daneZbiorka.tryb[0] === 'publiczna') {
+      console.log('publiczna');
+    }
+  }, [daneZbiorka]);
 
   const handleEditZbiorkaChange = (e, field) => {
-    if (field == 'typZbiorki') {
-      setEditZbiorka(e)
+    if (field === 'typZbiorki') {
+      setEditZbiorka((prev) => ({
+        ...prev,
+        [field]: e,
+      }));
     } else {
-      const { value } = e.target
+      const { value } = e.target;
       setEditZbiorka((prev) => ({
         ...prev,
         [field]: value,
-      }))
+      }));
     }
-  }
+  };
 
   return (
     <Dialog>
@@ -105,7 +123,11 @@ export default function EdycjaZbiorki({ daneZbiorka }) {
         </div>
         <DialogFooter>
           <DialogTrigger asChild>
-            <Button onClick={console.log(editZbiorka)} type='submit'>
+            <Button onClick={() => {
+              editZbiorkaFinal(daneZbiorka.id,editZbiorka)
+              router.push(editZbiorka.tytul)
+            }
+            } type='submit'>
               Zapisz zmiany
             </Button>
           </DialogTrigger>
