@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
             <SidebarProvider defaultOpen={true}>
               {/* Conditionally render the Menu */}
               {shouldShowMenu && <Menu />}
-              <main>{children}</main>
+              <main className='w-full'>{children}</main>
             </SidebarProvider>
             <Toaster duration={100} />
           </QueryClientProvider>

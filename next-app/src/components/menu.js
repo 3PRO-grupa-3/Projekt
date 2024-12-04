@@ -8,9 +8,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { Bell, Home, Megaphone, User } from 'lucide-react'
+import { Bell, Home, Megaphone, User, User2, Users } from 'lucide-react'
 import Link from 'next/link'
-import { ModeToggle } from './ModeToggle'
+import ModeToggle from './ModeToggle'
 import { Button } from './ui/button'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@/hooks/useUser'
@@ -18,6 +18,7 @@ import { useUser } from '@/hooks/useUser'
 export default function Menu() {
   const router = useRouter()
   const { user, logout } = useUser()
+
   const items = [
     {
       title: 'Zbiórki',
@@ -38,7 +39,16 @@ export default function Menu() {
       title: 'Mój profil',
       url: '/moj-profil',
       icon: User,
-    }
+    },
+    ...(user?.typ === 'admin'
+      ? [
+          {
+            title: 'Użytkownicy',
+            url: '/uzytkownicy',
+            icon: Users,
+          },
+        ]
+      : []),
   ]
   return (
     <Sidebar>
