@@ -33,11 +33,11 @@ export async function przelaczNaAdmina(user) {
     throw new Error(error);
   }
 }
-// export async function usunUzytkownika(user) {
-//   try {
-//     console.log(user.id);
-//     await pocketbase.collection("users").delete(user.id);
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// }
+export async function usunUzytkownika(user) {
+  try {
+    console.log(user.id);
+    await pocketbase.collection("users").delete(user.id);
+  } catch (error) {
+    throw new Error(error);
+  }
+}

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { useUser } from "@/hooks/useUser";
 import ZmienUprawnienia from "./ZmienUprawnienia";
+import UsunUsera from "./UsunUsera";
 
 export default function UsersTable({ results }) {
   const { user } = useUser();
@@ -37,9 +38,9 @@ export default function UsersTable({ results }) {
               <TableCell className="text-xl">
                 <ZmienUprawnienia user={result} />
               </TableCell>
-              {/* <TableCell className="text-xl">
+              <TableCell className="text-xl">
                 <UsunUsera user={result} />
-              </TableCell> */}
+              </TableCell>
             </TableRow>
           );
         })}

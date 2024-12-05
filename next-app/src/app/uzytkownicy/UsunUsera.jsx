@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import ConfirmationAlert from "@/lib/basicComponents/ConfirmationAlert";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash } from "lucide-react";
-// import { usunUzytkownika } from "./data-acces";
+import { usunUzytkownika } from "./data-acces";
 
 export default function UsunUsera({ user }) {
   const queryClient = useQueryClient();
