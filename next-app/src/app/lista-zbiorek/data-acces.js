@@ -53,3 +53,16 @@ export async function editZbiorkaFinal(zbiorkaID,editData) {
     throw new Error(error);
   }
 }
+
+export async function addUczenToZbiorkaFinal(zbiorkaId,uczenId) {
+  try {
+    const data = {
+      "id_ucznia": uczenId,
+      "id_zbiorki": zbiorkaId
+  };
+  
+  await pocketbase.collection('uczniowe').create(data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}

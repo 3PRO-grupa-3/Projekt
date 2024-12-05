@@ -24,7 +24,7 @@ export default function Page() {
 
   return (
     <div>
-      <h1>LISTA ZBIÓREK</h1>
+      <h1>LISTA PIZD</h1>
       {data?.map((zbiorka) => (
         <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
           <Card>
