@@ -14,31 +14,30 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { addUczenToZbiorkaFinal, fetchUsers } from "../data-acces";
 import { cn } from "@/lib/utils";
 
-export const addUczenToZbiorka = (daneZbiorka, uczenId) => {
-    if (uczenId && daneZbiorka) {
-      console.log("Uczeń ID:", uczenId);
-      console.log("Dane Zbiórka:", daneZbiorka);
-      addUczenToZbiorkaFinal(daneZbiorka.id, uczenId);
-    } else {
-      console.log("Brak danych dla ucznia lub zbiórki.");
-    }
-  };
-  
-
-export default function DodajUczniaLista() {
+export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
   const { data: users, isLoading, error } = useQuery({
     queryKey: ["users"],
-    queryFn: fetchUsers,
+    queryFn: fetchUsers
   });
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const handleSelect = (currentValue) => {
-    const newValue = currentValue === value ? "" : currentValue;
-    setValue(newValue);
-    console.log("Selected Value:", newValue);
-    addUczenToZbiorka()
+  const handleSelect = (user) => {
+    setSelectedUser(user);
+    console.log("Selected User:", user);
+  };
+
+  const handleAddStudent = async () => {
+    if (selectedUser && daneZbiorka) {
+      try {
+        await addUczenToZbiorkaFinal(daneZbiorka.id, selectedUser.id);
+        onStudentAdded();
+        setOpen(false);
+      } catch (error) {
+        console.error("Failed to add student to zbiórka:", error);
+      }
+    }
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -53,8 +52,8 @@ export default function DodajUczniaLista() {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? users.find((user) => user.imie + " " + user.nazwisko === value)?.idk
+          {selectedUser
+            ? `${selectedUser.imie} ${selectedUser.nazwisko}`
             : "Wybierz Ucznia"}
           <ChevronsUpDown className="opacity-50" />
         </Button>
@@ -68,14 +67,14 @@ export default function DodajUczniaLista() {
               {users.map((user) => (
                 <CommandItem
                   key={user.id}
-                  value={user.imie + " " + user.nazwisko}
-                  onSelect={handleSelect}
+                  value={`${user.imie} ${user.nazwisko}`}
+                  onSelect={() => handleSelect(user)}
                 >
-                  {user.imie + " " + user.nazwisko}
+                  {`${user.imie} ${user.nazwisko}`}
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === user.imie + " " + user.nazwisko ? "opacity-100" : "opacity-0"
+                      selectedUser === user ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
@@ -84,6 +83,9 @@ export default function DodajUczniaLista() {
           </CommandList>
         </Command>
       </PopoverContent>
+      <Button onClick={handleAddStudent} disabled={!selectedUser}>
+        Dodaj Ucznia
+      </Button>
     </Popover>
   );
 }

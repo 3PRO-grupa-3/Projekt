@@ -57,8 +57,8 @@ export async function editZbiorkaFinal(zbiorkaID,editData) {
 export async function addUczenToZbiorkaFinal(zbiorkaId,uczenId) {
   try {
     const data = {
-      "id_ucznia": uczenId,
-      "id_zbiorki": zbiorkaId
+      id_ucznia: uczenId,
+      id_zbiorki: zbiorkaId
   };
   
   await pocketbase.collection('uczniowe').create(data);
