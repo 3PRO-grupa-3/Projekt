@@ -19,14 +19,36 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useQuery } from "@tanstack/react-query"
+import { fetchKomentarzeInUzytkownik, fetchProblemyInUzytkownik, fetchUzytkownicy, fetchWplatyInUzytkownik, fetchZBiorkiInUzytkownik } from "./data-acces"
 
 
 export default function Page(){
 
+ const {user} = useUser()
+  console.log("user",user)
 
-    
-    const {user} = useUser()
-    console.log(user)
+  const { zbiorki } = useQuery({
+    queryKey: ['getZbiorkiUserInfo'],
+    queryFn: fetchZBiorkiInUzytkownik(user?.id),
+  });
+
+  const { komentarze } = useQuery({
+    queryKey: ['getZbiorkiUserInfo'],
+    queryFn: fetchKomentarzeInUzytkownik(user?.id),
+  });
+
+  const { problemy } = useQuery({
+    queryKey: ['getProblemyUserInfo'],
+    queryFn: fetchProblemyInUzytkownik(user?.id),
+  });
+
+  const { wplaty } = useQuery({
+    queryKey: ['getWplatyUserInfo'],
+    queryFn: fetchWplatyInUzytkownik(user?.id),
+  });
+
+   
     return(
         <div className="flex flex-col items-center justify-center m-4">
             <h1>Zmień szczegóły konta</h1>
