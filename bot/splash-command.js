@@ -1,13 +1,10 @@
 const { REST, Routes, SlashCommandBuilder } = require("discord.js")
-const Pocketbase = require('pocketbase');
-
-import pb from "../next-app/src/lib/pocketbase";
 
 require('dotenv').config();
 
 const BotToken = process.env.TOKEN
-const IdBot = "1311642211825487952"
-const IdServer = "1310891135048220714"
+const IdBot = process.env.BOT
+const IdServer = process.env.SERVER
 
 const rest = new REST().setToken(BotToken)
 
@@ -16,14 +13,18 @@ const slashRegister = async () => {
         await rest.put(Routes.applicationGuildCommands(IdBot, IdServer), {
             body: [
                 new SlashCommandBuilder()
-                    .setName("ping")
-                    .setDescription("prosta komenda")
+                    .setName("list")
+                    .setDescription("wyswietl liste osob ktore nie zaplacily za zbiorke")
                     .addStringOption( option => {
                         return option
-                        .setName("text")
-                        .setDescription("tekst opcji")
+                        .setName("category")
+                        .setDescription("wybierz zbiorke")
                         .setRequired(true)
-                        .setMaxLength(32)
+                        .addChoices(
+                            {name: "TestTest", value: "Test"},
+                            {name: "TestTest2", value: "Test2"},
+                            {name: "natychmiastowe przypomnienie", value: "@everyone" + " przypominam o wplacie na zbiorke!!!"}
+                        )
                     })
             ]
         })
