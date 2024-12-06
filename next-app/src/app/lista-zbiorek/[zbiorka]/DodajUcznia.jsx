@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,37 +11,86 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { addUczenToZbiorkaFinal, fetchUsers } from "../data-acces";
+import { addUczenToZbiorkaFinal, fetchUczen, fetchUsers } from "../data-acces";
 import { cn } from "@/lib/utils";
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
-  const { data: users, isLoading, error } = useQuery({
+  const { data: users,refetch} = useQuery({
     queryKey: ["users"],
-    queryFn: fetchUsers
+    queryFn: fetchUsers,
   });
 
+  const { data: relacjeZbiorka} = useQuery({
+    queryKey: ["uzytkownicyRelacje"],
+    queryFn: fetchUczen
+  });
+
+  const queryClient = useQueryClient();
+
+
+  const [usersNotInZbiorka,setUsersNotInZbiorka] = useState(null)
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const handleSelect = (user) => {
-    setSelectedUser(user);
-    console.log("Selected User:", user);
-  };
+    // const allUsersIds = users.map((user) => user.id);
 
-  const handleAddStudent = async () => {
-    if (selectedUser && daneZbiorka) {
-      try {
-        await addUczenToZbiorkaFinal(daneZbiorka.id, selectedUser.id);
-        onStudentAdded();
-        setOpen(false);
-      } catch (error) {
-        console.error("Failed to add student to zbiórka:", error);
+    // const allIdInZbiorka = relacjeZbiorka
+    //     ?.filter((item) => item.id_zbiorki === daneZbiorka.id)
+    //     .map((item) => item.id_ucznia);
+
+    // const allUsersNotInZbiorka = allIdInZbiorka?.map((item)=>allUsersIds!=allIdInZbiorka)
+
+    // setUsersNotInZbiorka(allUsersNotInZbiorka)
+
+    useEffect(() => {
+      if (!users || !relacjeZbiorka || !daneZbiorka) return;
+    
+      const allUsersIds = users.map((user) => user.id);
+    
+      const allIdInZbiorka = relacjeZbiorka
+        .filter((item) => item.id_zbiorki === daneZbiorka.id)
+        .map((item) => item.id_ucznia);
+    
+      const allUsersNotInZbiorka = allUsersIds.filter(
+        (id) => !allIdInZbiorka.includes(id)
+      );
+    
+      const filteredUsers = users.filter((user) =>
+        allUsersNotInZbiorka.includes(user.id)
+      );
+    
+      setUsersNotInZbiorka(filteredUsers);
+      console.log("Users in zbiórka:", allIdInZbiorka);
+      console.log("Users not in zbiórka:", filteredUsers);
+    }, [users, relacjeZbiorka, daneZbiorka]);
+    
+
+
+    const handleSelect = (user) => {
+      setSelectedUser(user);
+      console.log("Selected User:", user);
+    };
+    
+    const handleAddStudent = async () => {
+      if (selectedUser && daneZbiorka) {
+        try {
+          await addUczenToZbiorkaFinal(daneZbiorka.id, selectedUser.id);
+    
+          onStudentAdded();
+    
+          setOpen(false);
+    
+          await queryClient.invalidateQueries("uzytkownicyRelacje");
+    
+          await refetch();
+        } catch (error) {
+          console.error("Failed to add student to zbiórka:", error);
+        }
       }
-    }
-  };
-
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+    };
+    
+    
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -64,7 +113,7 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
           <CommandList>
             <CommandEmpty>Nie znaleziono ucznia</CommandEmpty>
             <CommandGroup>
-              {users.map((user) => (
+              {usersNotInZbiorka!=null && usersNotInZbiorka.map((user) => (
                 <CommandItem
                   key={user.id}
                   value={`${user.imie} ${user.nazwisko}`}
@@ -87,5 +136,6 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
         Dodaj Ucznia
       </Button>
     </Popover>
+
   );
 }
