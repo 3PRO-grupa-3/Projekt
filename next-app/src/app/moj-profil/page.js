@@ -27,12 +27,15 @@ export default function Page() {
     queryFn: () => getWplaty(),
   });
 
+  const { user } = useUser();
+  console.log("user", user);
+
   return (
     <div className="flex flex-col items-center justify-center m-4">
       <h1>Zmień szczegóły konta</h1>
       <div className="">
-        <p>Imię: {}</p>
-        <p>Nazwisko: {}</p>
+        <p>Imię: {user?.imie}</p>
+        <p>Nazwisko: {user?.nazwisko}</p>
         <div className="">
           <Dialog>
             <DialogTrigger asChild>
@@ -48,8 +51,8 @@ export default function Page() {
                     Imię
                   </Label>
                   <Input
+                    defaultValue={user?.imie}
                     id="name"
-                    defaultValue="Pobrac z bazy"
                     className="col-span-3"
                   />
                 </div>
@@ -58,8 +61,8 @@ export default function Page() {
                     Nazwisko
                   </Label>
                   <Input
+                    defaultValue={user?.nazwisko}
                     id="username"
-                    defaultValue="pobrac z bazy"
                     className="col-span-3"
                   />
                 </div>
@@ -71,9 +74,11 @@ export default function Page() {
           </Dialog>
         </div>
       </div>
-      {wplaty?.map((wplata) => {
-        return <Wplata key={wplata.id} wplata={wplata} />;
-      })}
+      <div className="flex flex-row">
+        {wplaty?.map((wplata) => {
+          return <Wplata key={wplata.id} wplata={wplata} />;
+        })}
+      </div>
     </div>
   );
 }
