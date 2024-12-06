@@ -10,7 +10,6 @@ import DodajUczniaLista, { addUczenToZbiorka } from './dodajUcznia';
 
 
 export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
-  console.log(userInfo);
 
   return (
     <div id="action-buttons">
@@ -26,9 +25,9 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
 
           <div className="flex flex-row justify-between items-center ">
           <DodajUczniaLista
-  daneZbiorka={daneZbiorka}
-  onStudentAdded={() => mutation.mutate("dodajUcznia")}
-/>
+          daneZbiorka={daneZbiorka}
+          onStudentAdded={() => mutation.mutate("dodajUcznia")}
+        />
           <ConfirmationAlert
               message={"Czy napewno chcesz dodać tego ucznia do zbiórki"}
               cancelText={"Powrót"}

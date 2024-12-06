@@ -31,25 +31,27 @@ export default function Wplata({ wplata }) {
   }
 
   return (
-    <Card className="w-[20vw]">
-      <CardHeader>
-        {zbiorkaWplaty !== undefined && (
-          <CardTitle className="flex flex-col gap-2">
-            <p>{zbiorkaWplaty[0].Tytul}</p>
-            <p className="text-muted-foreground text-sm">
-              {formatDate(wplata.data_utworzenia)}
+    <div className="m-3">
+      <Card className="w-[20vw]">
+        <CardHeader>
+          {zbiorkaWplaty !== undefined && (
+            <CardTitle className="flex flex-col gap-2">
+              <p>{zbiorkaWplaty[0].Tytul}</p>
+              <p className="text-muted-foreground text-sm">
+                {formatDate(wplata.data_utworzenia)}
+              </p>
+            </CardTitle>
+          )}
+        </CardHeader>
+        <CardContent className="grid w-full items-center gap-4">
+          <div className="flex flex-col space-y-1.5">
+            <p>
+              Wplacono: {wplata.kwota} ({wplata.typ_platnosci})
             </p>
-          </CardTitle>
-        )}
-      </CardHeader>
-      <CardContent className="grid w-full items-center gap-4">
-        <div className="flex flex-col space-y-1.5">
-          <p>
-            Wplacono: {wplata.kwota} ({wplata.typ_platnosci})
-          </p>
-        </div>
-      </CardContent>
-      <CardFooter className="flex justify-between"></CardFooter>
-    </Card>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between"></CardFooter>
+      </Card>
+    </div>
   );
 }
