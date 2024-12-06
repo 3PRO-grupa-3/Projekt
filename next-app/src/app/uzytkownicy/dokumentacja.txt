@@ -17,3 +17,7 @@ Do kazdego rekordu generuje odpowiedni guzik do zmiany uprawnień (NaUcznia, NaA
 Wyswietla i obsługuje guzik do zmiany uprawnień (uczen/admin)
 Request wykonuje "useMutation", po poprawnej zmianie danych w db, nastepuje ponowne pobranie listy użytkowników aby odświeżyć tabele "invalidateQueries"
 ConfirmationComponent to wyskakujące okienko do potwierdzenia wyboru
+
+./UsunUsera 
+UWAGA!
+usuwa użytkownika oraz wszystkie jego dzieła (komentarze, problemy, zbiórki, wpłaty)

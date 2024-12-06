@@ -19,9 +19,9 @@ export default function UsunUsera({ user }) {
 
   return (
     <ConfirmationAlert
-      message={"Czy napewno chcesz usunąć użytkownika?"}
+      message={`Czy napewno chcesz usunąć użytkownika ${user.imie} ${user.nazwisko}?`}
       description={
-        "Tej akcji nie można cofnąć, użytkownik straci dostęp do aplikacji."
+        "UWAGA! Usunięcie użytkownika spowoduje usunięcie jego wszystkich dokonań (komentarzy, zbiórek, wpłat, problemów). Tej akcji nie można cofnąć, użytkownik straci dostęp do aplikacji."
       }
       cancelText={"Powrót"}
       triggerElement={
@@ -36,7 +36,7 @@ export default function UsunUsera({ user }) {
         description: "Spróbuj ponownie później.",
       }}
       toastSucces={{
-        title: "Uczeń został dodany do zbiórki",
+        title: `${user.imie} ${user.nazwisko} został usunięty`,
         description: "",
       }}
       onSuccesCustomFunc={() =>
