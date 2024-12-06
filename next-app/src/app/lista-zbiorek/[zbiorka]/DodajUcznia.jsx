@@ -80,9 +80,7 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
           onStudentAdded();
     
           setOpen(false);
-    
           await queryClient.invalidateQueries("uzytkownicyRelacje");
-    
           await refetch();
         } catch (error) {
           console.error("Failed to add student to zbiórka:", error);
