@@ -37,7 +37,7 @@ export default function page() {
           <h1 className="text-4xl">Użytkownicy</h1>
         </div>
         <div className="mt-4 text-muted-foreground">
-          <p>Użyj tabeli poniżej aby zarządzaj uprawnieniami użytkowników</p>
+          <p>Użyj tabeli poniżej aby zarządzaj uprawnieniami użytkowników.</p>
         </div>
       </div>
       <SearchTable users={users} />
