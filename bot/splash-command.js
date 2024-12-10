@@ -21,8 +21,6 @@ const slashRegister = async () => {
                         .setDescription("wybierz zbiorke")
                         .setRequired(true)
                         .addChoices(
-                            {name: "TestTest", value: "Test"},
-                            {name: "TestTest2", value: "Test2"},
                             {name: "natychmiastowe przypomnienie", value: "@everyone" + " przypominam o wplacie na zbiorke!!!"}
                         )
                     })

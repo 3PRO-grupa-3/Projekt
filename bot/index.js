@@ -1,5 +1,6 @@
 require('dotenv').config();
 const PocketBase = require('pocketbase/cjs');
+let isSubscribed = false;
 
 const { Client, GatewayIntentBits} = require('discord.js');
 const client = new Client({
@@ -20,6 +21,32 @@ const messageContent = "@everyone" + "przypominam o zbiorce";
 client.on("ready", () => {
 
  console.log(`Logged in as ${client.user.tag}!`)
+
+ const newRecord = () => {
+    if (isSubscribed) {
+        console.warn("Subskrypcja już aktywna.");
+        return;
+    }
+    isSubscribed = true;
+
+    try {
+        pb.collection('Zbiorki').subscribe('*', (e) => {
+            if (e.action === 'create') {
+                const channel = client.channels.cache.get(channelId);
+                if (channel) {
+                    channel.send(`Nowa zbiórka została dodana: ${JSON.stringify(e.record)}`);
+                } else {
+                    console.error("Nie znaleziono kanału Discord.");
+                }
+            }
+        });
+    } catch (err) {
+        console.error("Błąd podczas subskrypcji PocketBase:", err.message);
+    }
+};
+
+newRecord();
+
  const sendMessageAtTargetTime = () => {
 
     const now = new Date();
