@@ -66,3 +66,17 @@ export async function addUczenToZbiorkaFinal(zbiorkaId,uczenId) {
     throw new Error(error);
   }
 }
+
+export async function addNewProblem(zbiorkaId,uczenId,trescProblemu) {
+  try {
+    const data = {
+      tresc: trescProblemu,
+      id_zbiorki: zbiorkaId,
+      id_ucznia: uczenId,
+      wykonano: false
+  };
+  await pocketbase.collection('problemy').create(data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}

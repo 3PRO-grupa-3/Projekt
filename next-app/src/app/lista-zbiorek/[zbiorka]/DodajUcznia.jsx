@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { addUczenToZbiorkaFinal, fetchUczen, fetchUsers } from "../data-acces";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from '@tanstack/react-query';
+import ConfirmationAlert from "@/lib/basicComponents/ConfirmationAlert";
 
 export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
   const { data: users,refetch} = useQuery({
@@ -61,15 +62,15 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
       );
     
       setUsersNotInZbiorka(filteredUsers);
-      console.log("Users in zbiórka:", allIdInZbiorka);
-      console.log("Users not in zbiórka:", filteredUsers);
+      // console.log("Users in zbiórka:", allIdInZbiorka);
+      // console.log("Users not in zbiórka:", filteredUsers);
     }, [users, relacjeZbiorka, daneZbiorka]);
     
 
 
     const handleSelect = (user) => {
       setSelectedUser(user);
-      console.log("Selected User:", user);
+      // console.log("Selected User:", user);
     };
     
     const handleAddStudent = async () => {
@@ -130,9 +131,28 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
           </CommandList>
         </Command>
       </PopoverContent>
-      <Button onClick={handleAddStudent} disabled={!selectedUser}>
-        Dodaj Ucznia
-      </Button>
+      {/* <Button onClick={handleAddStudent} disabled={!selectedUser}>
+        Dodaj test
+      </Button> */}
+
+      <ConfirmationAlert
+              message={"Czy napewno chcesz dodać tego ucznia do zbiórki"}
+              cancelText={"Powrót"}
+              triggerElement={<Button>Dodaj Ucznia</Button>}
+              mutationFn={() => console.log("")}
+              toastError={{
+                variant: "destructive",
+                title: "Nie udało się wykonać polecenia.",
+                description: "Spróbuj ponownie później.",
+              }}
+              toastSucces={{
+                title: "Uczeń został dodany do zbiórki",
+                description: "",
+              }}
+              onSuccesCustomFunc={
+                handleAddStudent
+              }
+            />
     </Popover>
 
   );
