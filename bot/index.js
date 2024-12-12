@@ -1,6 +1,7 @@
 require('dotenv').config();
-const PocketBase = require('pocketbase/cjs');
-let isSubscribed = false;
+const PocketBase = require('pocketbase/cjs')
+
+const pb = new PocketBase('https://pb.wama.zbiorki.zs1mm.edu.pl');
 
 const { Client, GatewayIntentBits} = require('discord.js');
 const client = new Client({
@@ -10,9 +11,6 @@ const client = new Client({
         GatewayIntentBits.MessageContent 
     ],
 });
-
-const pb = new PocketBase('https://pb.wama.zbiorki.zs1mm.edu.pl');  
-
 const targetHour = 16;
 const targetMinute = 10;
 const channelId = process.env.CHANNEL;
@@ -21,31 +19,6 @@ const messageContent = "@everyone" + "przypominam o zbiorce";
 client.on("ready", () => {
 
  console.log(`Logged in as ${client.user.tag}!`)
-
- const newRecord = () => {
-    if (isSubscribed) {
-        console.warn("Subskrypcja już aktywna.");
-        return;
-    }
-    isSubscribed = true;
-
-    try {
-        pb.collection('Zbiorki').subscribe('*', (e) => {
-            if (e.action === 'create') {
-                const channel = client.channels.cache.get(channelId);
-                if (channel) {
-                    channel.send(`Nowa zbiórka została dodana: ${JSON.stringify(e.record)}`);
-                } else {
-                    console.error("Nie znaleziono kanału Discord.");
-                }
-            }
-        });
-    } catch (err) {
-        console.error("Błąd podczas subskrypcji PocketBase:", err.message);
-    }
-};
-
-newRecord();
 
  const sendMessageAtTargetTime = () => {
 

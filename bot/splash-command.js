@@ -14,11 +14,11 @@ const slashRegister = async () => {
             body: [
                 new SlashCommandBuilder()
                     .setName("list")
-                    .setDescription("wyswietl liste osob ktore nie zaplacily za zbiorke")
+                    .setDescription("przypomnij natychmiastowo")
                     .addStringOption( option => {
                         return option
                         .setName("category")
-                        .setDescription("wybierz zbiorke")
+                        .setDescription("przypomnij natychmiastowo")
                         .setRequired(true)
                         .addChoices(
                             {name: "natychmiastowe przypomnienie", value: "@everyone" + " przypominam o wplacie na zbiorke!!!"}
