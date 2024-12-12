@@ -15,9 +15,15 @@ export default function ModeToggle() {
       }}
     >
       {theme == "dark" ? (
-        <Moon className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <div className=" flex flex-row gap-2 items-center">
+          <Moon className="h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <p>Ciemny Motyw</p>
+        </div>
       ) : (
-        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+        <div className=" flex flex-row gap-2 items-center">
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+          <p>Jasny Motyw</p>
+        </div>
       )}
 
       <span className="sr-only">Toggle theme</span>

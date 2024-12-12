@@ -1,6 +1,8 @@
 import { pocketbase } from "@/lib/pocketbase";
 
 export async function getProblems() {
+  pocketbase.autoCancellation(false);
+
   try {
     const problemsList = await pocketbase
       .collection("problemy")
@@ -28,9 +30,14 @@ export async function getProblems() {
         return problem;
       })
     );
+    // console.log(problemsWithDetails);
+
+    pocketbase.autoCancellation(true);
 
     return problemsWithDetails;
   } catch (error) {
+    console.log(error);
+
     throw new Error(error);
   }
 }

@@ -26,7 +26,7 @@ export default function UsunUsera({ user }) {
       cancelText={"Powrót"}
       triggerElement={
         <Button variant="destructive">
-          Usuń użytkownika <Trash />
+          Usuń <Trash />
         </Button>
       }
       mutationFn={() => usunUseraMutation.mutateAsync()}

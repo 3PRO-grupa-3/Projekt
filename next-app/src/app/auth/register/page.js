@@ -64,7 +64,6 @@ export default function page() {
         </div>
 
         <div className="flex flex-col gap-4">
-          {" "}
           <Label htmlFor="email">Email:</Label>
           <Input
             id="email"
@@ -75,7 +74,6 @@ export default function page() {
           />
         </div>
         <div className="flex flex-col gap-4">
-          {" "}
           <Label htmlFor="password">Hasło:</Label>
           <Input
             id="password"
