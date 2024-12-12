@@ -80,3 +80,36 @@ export async function addNewProblem(zbiorkaId,uczenId,trescProblemu) {
     throw new Error(error);
   }
 }
+
+export async function addNewKomentarz(zbiorkaId,autorId,trescKomentarza) {
+  try {
+    const data = {
+      tresc: trescKomentarza,
+      id_zbiorki: zbiorkaId,
+      id_autora: autorId,
+      };
+  await pocketbase.collection('komentarze').create(data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function deleteKomentarzFinal(komentarzId) {
+  try {
+  await pocketbase.collection('komentarze').delete(komentarzId)
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function potwierdzWplate(wplatyId) {
+  try {
+   const data = {
+    wplacono: true,
+ };
+ 
+   await pocketbase.collection('wplaty').update(wplatyId,data);
+ } catch (error) {
+   throw new Error(error);
+ }
+}

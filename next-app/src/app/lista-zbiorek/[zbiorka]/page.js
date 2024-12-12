@@ -72,7 +72,6 @@ export default function Page({ params }) {
   })
 
   if (isLoadingZbiorka) return <p>Loading...</p>
-  console.log(daneZbiorka?.status)
 
   return (
     <div>
@@ -90,7 +89,7 @@ export default function Page({ params }) {
       <ActionButtons mutation={mutation} userInfo={userInfo} daneZbiorka={daneZbiorka} />
       {/* fajnie jakby to bylo pokazane z uzyciem tabeli z shadcn,  */}
       {/* https://ui.shadcn.com/docs/components/data-table*/}
-      <ListaUczniow daneUczen={daneUczen} daneZbiorka={daneZbiorka} daneUzytkownik={daneUzytkownik} />
+      <ListaUczniow daneUczen={daneUczen} daneZbiorka={daneZbiorka} daneUzytkownik={daneUzytkownik} userInfo={userInfo} />
 
       <ListaKomentarzy daneZbiorka={daneZbiorka} daneUzytkownik={daneUzytkownik} userInfo={userInfo} />
     </div>

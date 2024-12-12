@@ -18,7 +18,7 @@ export default function Page() {
     queryKey: ['zbiorki'],
     queryFn: fetchZbiorki,
   });
-
+  console.log("data",data)
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
@@ -26,7 +26,7 @@ export default function Page() {
     <div>
       <h1>Lista Zbiórek</h1>
       {data?.map((zbiorka) => (
-        <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
+        zbiorka.tryb[0]=="publiczna" && <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
           <Card>
             <CardHeader>
               <CardTitle>{zbiorka.Tytul}</CardTitle>
