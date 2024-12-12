@@ -25,15 +25,21 @@ export default function page() {
 
   const userId = userInfo?.user?.id;
 
-  // Filter zbiorki to get only those associated with the logged-in user (as participant or author)
   const filteredZbiorki = dataZbiorki?.filter((zbiorka) => {
-    // Ensure that the user is linked to this zbiorka
     return dataUzytkownik?.some(uzytkownik => uzytkownik?.id_ucznia === userId && uzytkownik?.id_zbiorki === zbiorka?.id);
   });
 
+  let zbiorkiToDisplay = [];
+  
+  if (userInfo?.user?.rola === "uczen") {
+    zbiorkiToDisplay = filteredZbiorki;
+  } else if (userInfo?.user?.rola === "admin") {
+    zbiorkiToDisplay = dataZbiorki?.filter(zbiorka => zbiorka?.id_autora === userId);
+  }
+
   return (
     <div>
-      {filteredZbiorki?.map((zbiorka) => (
+      {zbiorkiToDisplay?.map((zbiorka) => (
         <Link key={`${zbiorka.id}-${zbiorka.Tytul}`} href={`lista-zbiorek/${zbiorka.Tytul}`}>
           <Card>
             <CardHeader>

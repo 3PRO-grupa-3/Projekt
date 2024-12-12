@@ -46,7 +46,7 @@ export default function Wplata({ wplata }) {
         <CardContent className="grid w-full items-center gap-4">
           <div className="flex flex-col space-y-1.5">
             <p>
-              Wplacono: {wplata.kwota} ({wplata.typ_platnosci})
+              Wplacono: {wplata.kwota} zł ({wplata.typ_platnosci})
             </p>
           </div>
         </CardContent>

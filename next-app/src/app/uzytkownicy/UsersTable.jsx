@@ -22,6 +22,8 @@ export default function UsersTable({ results }) {
           <TableHead className="">Imię</TableHead>
           <TableHead>Nazwisko</TableHead>
           <TableHead>Uprawnienia</TableHead>
+
+          <TableHead></TableHead>
           <TableHead></TableHead>
         </TableRow>
       </TableHeader>

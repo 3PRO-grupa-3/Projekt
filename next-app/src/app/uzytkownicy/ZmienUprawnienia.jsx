@@ -39,11 +39,14 @@ export default function ZmienUprawnienia({ user }) {
       cancelText={"Powrót"}
       triggerElement={
         user.rola === "admin" ? (
-          <Button variant="secondary">
+          <Button className="w-full  flex flex-row justify-center">
             Przełącz na Ucznia <UserRoundPen />
           </Button>
         ) : (
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            className="w-full flex flex-row justify-center"
+          >
             Przełącz na Administratora <UserRoundPen />
           </Button>
         )

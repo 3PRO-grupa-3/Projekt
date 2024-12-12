@@ -26,7 +26,7 @@ export default function Page() {
     <div>
       <h1>Lista Zbiórek</h1>
       {data?.map((zbiorka) => (
-        zbiorka.tryb[0]=="publiczna" && <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
+        zbiorka?.tryb[0]=="publiczna" && <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
           <Card>
             <CardHeader>
               <CardTitle>{zbiorka.Tytul}</CardTitle>

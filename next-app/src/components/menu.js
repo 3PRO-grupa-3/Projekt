@@ -10,8 +10,10 @@ import {
 } from "@/components/ui/sidebar";
 import {
   Bell,
+  CircleUser,
   Home,
   LayoutList,
+  LogOut,
   Megaphone,
   ShieldHalf,
   User,
@@ -28,6 +30,7 @@ import ConfirmationAlert from "@/lib/basicComponents/ConfirmationAlert";
 export default function Menu() {
   const router = useRouter();
   const { user, logout } = useUser();
+  // console.log(user);
 
   const items = [
     {
@@ -40,21 +43,16 @@ export default function Menu() {
       url: "/lista-zbiorek",
       icon: LayoutList,
     },
-    {
-      title: "Moje zbiórki",
-      url: "/moje-zbiorki",
-      icon: ShieldHalf,
-    },
-    {
-      title: "Problemy",
-      url: "/problemy",
-      icon: Megaphone,
-    },
-    {
-      title: "Mój profil",
-      url: "/moj-profil",
-      icon: User,
-    },
+    ...(user?.rola === "uczen" || user?.rola === "admin" || user !== null
+      ? [
+          {
+            title: "Moje zbiórki",
+            url: "/moje-zbiorki",
+            icon: ShieldHalf,
+          },
+        ]
+      : []),
+
     ...(user?.rola === "admin"
       ? [
           {
@@ -62,18 +60,17 @@ export default function Menu() {
             url: "/uzytkownicy",
             icon: Users,
           },
+          {
+            title: "Problemy",
+            url: "/problemy",
+            icon: Megaphone,
+          },
         ]
       : []),
   ];
   return (
     <Sidebar>
       <SidebarContent className="flex flex-column justify-start items-center p-4">
-        <div className="flex flex-row justify-between items-center">
-          <p>
-            {user?.imie} {user?.nazwisko}
-          </p>
-        </div>
-
         <SidebarGroupContent>
           <SidebarMenu>
             {items.map((item) => (
@@ -90,13 +87,32 @@ export default function Menu() {
         </SidebarGroupContent>
       </SidebarContent>
       <SidebarFooter>
+        {user && (
+          <Button variant="secondary">
+            <Link
+              href={"/moj-profil"}
+              className=" flex flex-row gap-2 items-center"
+            >
+              <CircleUser />
+              <p>
+                {user?.imie} {user?.nazwisko}
+              </p>
+            </Link>
+          </Button>
+        )}
+
         <ModeToggle />
+
         {user ? (
           <ConfirmationAlert
             message={`Czy napewno chcesz się wylogować?`}
             description={""}
             cancelText={"Powrót"}
-            triggerElement={<Button variant="secondary">Wyloguj się</Button>}
+            triggerElement={
+              <Button>
+                <LogOut /> Wyloguj się
+              </Button>
+            }
             mutationFn={() => null}
             toastError={{
               variant: "destructive",
