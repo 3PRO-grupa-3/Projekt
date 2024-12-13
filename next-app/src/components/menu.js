@@ -20,7 +20,6 @@ import {
   User,
   User2,
   Users,
-  Plus,
 } from 'lucide-react'
 import Link from 'next/link'
 import ModeToggle from './ModeToggle'
@@ -73,8 +72,8 @@ export default function Menu() {
             icon: Megaphone,
           },
           {
-            title: "Nowa Zbiorke",
-            url: "/nowa-zbiorka",
+            title: 'Nowa Zbiorke',
+            url: '/nowa-zbiorka',
             icon: Plus,
           },
         ]
