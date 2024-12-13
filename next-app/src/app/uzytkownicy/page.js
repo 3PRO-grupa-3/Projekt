@@ -13,7 +13,7 @@ export default function page() {
 
   useEffect(() => {
     if (user) {
-      console.log(user?.rola);
+      // console.log(user?.rola);
       if (user?.rola !== "admin") {
         router.push("/");
       }

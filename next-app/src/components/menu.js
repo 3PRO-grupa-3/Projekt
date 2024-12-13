@@ -15,6 +15,7 @@ import {
   LayoutList,
   LogOut,
   Megaphone,
+  Plus,
   ShieldHalf,
   User,
   User2,
@@ -70,6 +71,11 @@ export default function Menu() {
             title: 'Problemy',
             url: '/problemy',
             icon: Megaphone,
+          },
+          {
+            title: "Nowa Zbiorke",
+            url: "/nowa-zbiorka",
+            icon: Plus,
           },
         ]
       : []),

@@ -96,26 +96,6 @@ export default function page() {
           </div>
         </div>
       </div>
-      {/* <ConfirmationAlert
-        message={"Czy napewno chcesz to zrobic?"}
-        cancelText={"Powrót"}
-        triggerElement={
-          <Button variant="primary" className="bg-green-600 text-white">
-            tak <Hand />
-          </Button>
-        }
-        mutationFn={() => console.log("stest")}
-        toastError={{
-          variant: "destructive",
-          title: "Nie udało się wykonac czegos.",
-          description: "Spróbuj ponownie później.",
-        }}
-        toastSucces={{
-          title: "Testowy text.",
-          description: "",
-        }}
-        onSuccesCustomFunc={() => console.log("test")}
-      /> */}
     </>
   );
 }

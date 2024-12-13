@@ -90,7 +90,6 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
                     ) : (
                       <p>Nie zapłacono</p>
                     )}
-                    {/* Show the method of payment only after payment is confirmed */}
                     {paymentStatus[wplata.id] && metodaPlatnosci && (
                       <p>Metoda płatności: {metodaPlatnosci}</p>
                     )}
@@ -107,3 +106,6 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
     </div>
   );
 }
+
+//na pozniej do zrobienia: jesli jestem zalogowany jako uzytkownik i wchodze do danej zbiorki to moge przy moim uzytkowniku w liscie uczniowie kliknac guzik WYSLIJ REQUEST DO WPLATY wtedy
+//w bazie danych pojawi sie pusta wplata z wplacono jako false i typ platnosci null, wtedy admin bedzie mogl potwierdzic ta wplate i sigma

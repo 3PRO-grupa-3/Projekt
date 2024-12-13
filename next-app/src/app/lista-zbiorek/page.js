@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Card,
@@ -22,11 +22,22 @@ export default function Page() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
+  // useEffect(() => {
+  //   if (data) {
+  //     data.map((zbiorka) => {
+  //       if (zbiorka.Title.includes(' ')) {
+  //         console.log("test");
+  //       }
+  //     });
+  //   }
+  // }, [data]);
+  
+
   return (
     <div>
       <h1>Lista Zbiórek</h1>
       {data?.map((zbiorka) => (
-        zbiorka?.tryb[0]=="publiczna" && <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
+        zbiorka?.tryb=="publiczna" && <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
           <Card>
             <CardHeader>
               <CardTitle>{zbiorka.Tytul}</CardTitle>
