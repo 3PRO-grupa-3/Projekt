@@ -31,7 +31,7 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
 
   return (
     <div id="action-buttons">
-      {userInfo?.user?.rola === 'uczen' && (
+      {userInfo?.user?.rola === 'uczen' &&  daneZbiorka?.status  && (
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline">Zgłoś zbiórke</Button>
@@ -90,6 +90,8 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
         />
           </div>
         </div>
+      ) : daneZbiorka?.status ? (
+        <></>
       ) : (
         <p>Zbiórka jest zakończona</p>
       )}

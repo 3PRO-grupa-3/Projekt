@@ -9,16 +9,18 @@ import ListaKomentarzy from './ListaKomentarzy'
 import ActionButtons from './ActionButtons'
 
 export default function Page({ params }) {
-  const zbiorkaParams = React.use(params)
+  const zbiorkaParamsBeforeDecode = React.use(params)
+  const zbiorkaParamsDecoded =  decodeURIComponent(zbiorkaParamsBeforeDecode.zbiorka)
   const userInfo = useUser()
-
+  console.log("b4",zbiorkaParamsBeforeDecode)
+  console.log("after",zbiorkaParamsDecoded)
   const {
     data: daneZbiorka,
     isLoading: isLoadingZbiorka,
     refetch,
   } = useQuery({
-    queryKey: ['zbiorka', zbiorkaParams.zbiorka],
-    queryFn: () => fetchZbiorkaByTitle(zbiorkaParams.zbiorka),
+    queryKey: ['zbiorka', zbiorkaParamsDecoded],
+    queryFn: () => fetchZbiorkaByTitle(zbiorkaParamsDecoded),
   })
 
   //dodac bardziej unikalne query key do useQuery

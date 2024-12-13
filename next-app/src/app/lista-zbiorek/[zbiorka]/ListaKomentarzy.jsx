@@ -33,7 +33,7 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
     <div>
       <h1 className='text-3xl'>Komentarze</h1>
       <div>
-      <Card>
+      {daneZbiorka?.status && <Card>
       <CardHeader>
         <CardTitle>Dodaj Komentarz</CardTitle>
       </CardHeader>
@@ -69,7 +69,7 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
             }
               />  
       </CardFooter>
-    </Card>
+    </Card>}
       </div>
       <div>
       {daneKomentarz?.map((komentarz) => {
