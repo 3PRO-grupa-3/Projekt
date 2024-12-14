@@ -1,5 +1,4 @@
 'use client'
-
 import InputWithLabel from '@/lib/basicComponents/InputWithLabel'
 import { useState, useCallback } from 'react'
 import { Label } from '@radix-ui/react-label'
@@ -10,6 +9,7 @@ import ConfirmationAlert from '@/lib/basicComponents/ConfirmationAlert'
 import { Plus } from 'lucide-react'
 import { useUser } from '@/hooks/useUser'
 import { pocketbase } from '@/lib/pocketbase'
+import PageTitle from '@/lib/basicComponents/PageTitle'
 
 const INITIAL_STATE = {
   tytul: '',
@@ -43,10 +43,7 @@ export default function Page() {
 
   return (
     <div className='w-full flex flex-col justify-center items-center pt-14 pb-14'>
-      <div className='w-2/3'>
-        <h1 className='text-4xl'>Nowa Zbiórka</h1>
-        <p className='mt-4 text-muted-foreground'>Wypełnij wymagane informacje aby rozpocząć nową zbiórkę.</p>
-      </div>
+      <PageTitle title='Nowa Zbiórka' description='Wypełnij wymagane informacje aby rozpocząć nową zbiórkę.' />
 
       <div className='w-full flex flex-col justify-center items-center mt-8 gap-8'>
         <div className='w-1/3 flex flex-col gap-4'>

@@ -57,11 +57,6 @@ export default function Menu() {
     ...(user?.rola === 'admin'
       ? [
           {
-            title: 'Dodaj zbiórkę',
-            url: '/dodaj-zbiorke',
-            icon: Plus,
-          },
-          {
             title: 'Użytkownicy',
             url: '/uzytkownicy',
             icon: Users,
@@ -99,14 +94,15 @@ export default function Menu() {
       </SidebarContent>
       <SidebarFooter>
         {user && (
-          <Button variant='secondary'>
-            <Link href={'/moj-profil'} className=' flex flex-row gap-2 items-center'>
+          <Link href={'/moj-profil'}>
+            <Button variant='secondary' className=' flex flex-row gap-2 items-center w-full'>
               <CircleUser />
               <p>
-                {user?.imie} {user?.nazwisko}
+                {user?.imie} {user?.nazwisko} (
+                {user?.rola === 'uczen' ? 'uczeń' : user?.rola === 'admin' ? 'admin' : 'obserwator'})
               </p>
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         )}
 
         <ModeToggle />

@@ -1,61 +1,45 @@
-"use client";
-import React, { useEffect } from "react";
-import { getUsers } from "./data-acces";
-import { useQuery } from "@tanstack/react-query";
-import SearchTable from "./SearchTable";
-import { useRouter } from "next/navigation";
-import { useUser } from "@/hooks/useUser";
-import SpinnerLoading from "@/lib/basicComponents/SpinnerLoading";
+'use client'
+import React, { useEffect } from 'react'
+import { getUsers } from './data-acces'
+import { useQuery } from '@tanstack/react-query'
+import SearchTable from './SearchTable'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@/hooks/useUser'
+import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
+import PageTitle from '@/lib/basicComponents/PageTitle'
+import { renderContent } from '@/lib/utils'
 
 export default function page() {
-  const router = useRouter();
-  const { user } = useUser();
+  const router = useRouter()
+  const { user } = useUser()
 
   useEffect(() => {
     if (user) {
       // console.log(user?.rola);
-      if (user?.rola !== "admin") {
-        router.push("/");
+      if (user?.rola !== 'admin') {
+        router.push('/')
       }
     }
-  }, [user, router]);
+  }, [user, router])
 
   const {
     data: users,
     isLoading,
-    error,
+    isError,
   } = useQuery({
-    queryKey: ["listOfUsers"],
+    queryKey: ['listOfUsers'],
     queryFn: () => getUsers(),
-  });
+  })
 
-  return (
-    <div className="w-full h-[100vh] flex flex-col justify-start items-center pt-14">
-      {error ? (
-        <div>Wystąpił błąd.</div>
-      ) : (
-        <>
-          <div className="w-2/3">
-            <div className="flex flex-row justify-start items-center">
-              <h1 className="text-4xl">Użytkownicy</h1>
-            </div>
-            <div className="mt-4 text-muted-foreground">
-              <p>
-                Użyj tabeli poniżej aby zarządzaj uprawnieniami użytkowników.
-              </p>
-            </div>
-          </div>
-          {isLoading ? (
-            <div className="mt-8">
-              <SpinnerLoading />
-            </div>
-          ) : (
-            <>
-              <SearchTable users={users} />
-            </>
-          )}
-        </>
-      )}
-    </div>
-  );
+  return renderContent({
+    isLoading,
+    isError,
+    data: users,
+    renderData: (users) => (
+      <div className='w-full h-[100vh] flex flex-col justify-start items-center pt-14'>
+        <PageTitle title='Użytkownicy' description='Użyj tabeli poniżej aby zarządzaj uprawnieniami użytkowników.' />
+        <SearchTable users={users} />
+      </div>
+    ),
+  })
 }

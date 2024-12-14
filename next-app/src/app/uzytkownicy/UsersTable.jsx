@@ -1,7 +1,7 @@
 import React from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useUser } from '@/hooks/useUser'
-import ZmienUprawnienia from './ZmienUprawnienia'
+import ZmienUprawnienia from './uprawnienia/ZmienUprawnienia'
 import UsunUsera from './UsunUsera'
 
 export default function UsersTable({ results }) {

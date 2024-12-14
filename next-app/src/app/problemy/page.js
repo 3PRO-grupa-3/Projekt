@@ -1,28 +1,29 @@
-"use client";
+'use client'
 
-import { useQuery } from "@tanstack/react-query";
-import { getProblems } from "./data-acces";
-import Problem from "./Problem";
-import { useEffect, useState } from "react";
-import FilterProblems from "./FilterProblems";
-import SpinnerLoading from "@/lib/basicComponents/SpinnerLoading";
-import { useRouter } from "next/navigation";
-import { useUser } from "@/hooks/useUser";
+import { useQuery } from '@tanstack/react-query'
+import { getProblems } from './data-acces'
+import Problem from './Problem'
+import { useEffect, useState } from 'react'
+import FilterProblems from './FilterProblems'
+import { useRouter } from 'next/navigation'
+import { useUser } from '@/hooks/useUser'
+import PageTitle from '@/lib/basicComponents/PageTitle'
+import { renderContent } from '@/lib/utils'
 
 export default function page() {
-  const router = useRouter();
-  const { user } = useUser();
+  const router = useRouter()
+  const { user } = useUser()
 
   useEffect(() => {
     if (user) {
       // console.log(user?.rola);
-      if (user?.rola !== "admin") {
-        router.push("/");
+      if (user?.rola !== 'admin') {
+        router.push('/')
       }
     }
-  }, [user, router]);
+  }, [user, router])
 
-  const [problems, setProblems] = useState([]);
+  const [problems, setProblems] = useState([])
   const {
     data: problemsList,
     isLoading,
@@ -30,59 +31,36 @@ export default function page() {
     isSuccess,
     isRefetching,
   } = useQuery({
-    queryKey: ["problemList"],
+    queryKey: ['problemList'],
     queryFn: () => getProblems(),
-  });
+  })
 
   useEffect(() => {
     if (isSuccess) {
-      setProblems(problemsList);
+      setProblems(problemsList)
     }
-  }, [isSuccess, problemsList]);
+  }, [isSuccess, problemsList])
   // console.log(problemsList);
 
-  return (
-    <div className="w-full  flex flex-col justify-center items-center pt-14 pb-14">
-      <div className="w-2/3">
-        <h1 className="text-4xl">Problemy</h1>
-        <p className="mt-4 text-muted-foreground">
-          Zarządzaj i rozwiązuj zgłoszone przez użytkowników problemy dotyczące
-          zbiórek.
-        </p>
+  return renderContent({
+    isLoading,
+    isError,
+    data: { problems, problemsList, setProblems },
+    renderData: ({ problems, problemsList, setProblems }) => (
+      <div className='w-full flex flex-col justify-center items-center pt-14 pb-14'>
+        <PageTitle
+          title='Problemy'
+          description='Zarządzaj i rozwiązuj zgłoszone przez użytkowników problemy dotyczące zbiórek.'
+        />
+        <FilterProblems setProblems={setProblems} problemList={problemsList} />
+        <div className='w-2/3 flex flex-col justify-center items-center mt-8 gap-8'>
+          {problems?.length === 0 ? (
+            <h1>Brak problemów.</h1>
+          ) : (
+            problems?.map((problem) => <Problem key={problem.id} problem={problem} isRefetching={isRefetching} />)
+          )}
+        </div>
       </div>
-      {isError ? (
-        <h1>Wystąpił błąd.</h1>
-      ) : (
-        <>
-          <FilterProblems
-            setProblems={setProblems}
-            problemList={problemsList}
-          />
-          <div className="w-2/3 flex flex-col justify-center items-center mt-8 gap-8">
-            {isLoading ? (
-              <SpinnerLoading />
-            ) : (
-              <>
-                {problems?.length === 0 ? (
-                  <h1>Brak problemów.</h1>
-                ) : (
-                  <>
-                    {problems?.map((problem) => {
-                      return (
-                        <Problem
-                          key={problem.id}
-                          problem={problem}
-                          isRefetching={isRefetching}
-                        />
-                      );
-                    })}
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </>
-      )}
-    </div>
-  );
+    ),
+  })
 }

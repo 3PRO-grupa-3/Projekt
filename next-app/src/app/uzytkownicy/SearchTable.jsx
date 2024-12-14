@@ -11,7 +11,7 @@ export default function SearchTable({ users }) {
   }, [users])
 
   useEffect(() => {
-    const search = inputValue.trim().toLowerCase() // Trim and convert input once
+    const search = inputValue.trim().toLowerCase()
     if (search === '') {
       setResults(users) // If input is empty, show all users
     } else {
