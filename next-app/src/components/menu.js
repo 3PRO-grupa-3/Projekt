@@ -8,19 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import {
-  Bell,
-  CircleUser,
-  Home,
-  LayoutList,
-  LogOut,
-  Megaphone,
-  Plus,
-  ShieldHalf,
-  User,
-  User2,
-  Users,
-} from 'lucide-react'
+import { CircleUser, Home, LayoutList, LogOut, Megaphone, Plus, ShieldHalf, Users } from 'lucide-react'
 import Link from 'next/link'
 import ModeToggle from './ModeToggle'
 import { Button } from './ui/button'
@@ -51,6 +39,11 @@ export default function Menu() {
             url: '/moje-zbiorki',
             icon: ShieldHalf,
           },
+          {
+            title: 'Problemy',
+            url: '/problemy',
+            icon: Megaphone,
+          },
         ]
       : []),
 
@@ -61,11 +54,7 @@ export default function Menu() {
             url: '/uzytkownicy',
             icon: Users,
           },
-          {
-            title: 'Problemy',
-            url: '/problemy',
-            icon: Megaphone,
-          },
+
           {
             title: 'Nowa Zbiorke',
             url: '/nowa-zbiorka',

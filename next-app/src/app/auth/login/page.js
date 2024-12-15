@@ -1,15 +1,11 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { useMutation } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
-import { login } from '../data-acces'
 import { pocketbase } from '@/lib/pocketbase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Label } from '@/components/ui/label'
-import { PasswordInput } from '@/components/ui/password-input'
-import { renderContent } from '@/lib/utils'
+
 import InputWithLabel from '@/lib/basicComponents/InputWithLabel'
 import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 
@@ -33,7 +29,7 @@ export default function page() {
     },
     onSuccess: () => {
       // console.log('mutation worked')
-      router.push('/lista-zbiorek')
+      router.push('/')
     },
   })
 
@@ -92,4 +88,11 @@ export default function page() {
       </div>
     </div>
   )
+}
+export async function login(loginData) {
+  try {
+    const authData = await pocketbase.collection('users').authWithPassword(loginData.email, loginData.password)
+  } catch (error) {
+    throw new Error(error)
+  }
 }

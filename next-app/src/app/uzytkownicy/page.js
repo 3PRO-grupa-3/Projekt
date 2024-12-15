@@ -1,13 +1,12 @@
 'use client'
 import React, { useEffect } from 'react'
-import { getUsers } from './data-acces'
 import { useQuery } from '@tanstack/react-query'
 import SearchTable from './SearchTable'
 import { useRouter } from 'next/navigation'
 import { useUser } from '@/hooks/useUser'
-import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 import PageTitle from '@/lib/basicComponents/PageTitle'
 import { renderContent } from '@/lib/utils'
+import { pocketbase } from '@/lib/pocketbase'
 
 export default function page() {
   const router = useRouter()
@@ -42,4 +41,14 @@ export default function page() {
       </div>
     ),
   })
+}
+async function getUsers() {
+  try {
+    const records = await pocketbase.collection('users').getFullList({
+      sort: '-created',
+    })
+    return records
+  } catch (error) {
+    throw new Error(error)
+  }
 }

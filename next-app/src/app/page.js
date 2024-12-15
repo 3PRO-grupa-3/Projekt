@@ -1,7 +1,7 @@
 'use client'
 import { useUser } from '@/hooks/useUser'
-import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 import { pocketbase } from '@/lib/pocketbase'
+import { renderContent } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 
 export default function Home() {
@@ -11,21 +11,22 @@ export default function Home() {
   const {
     data: adminList,
     isLoading,
-    error,
+    isError,
   } = useQuery({
     queryKey: ['adminList'],
     queryFn: () => getAdminList(),
     initialData: [],
-    enabled: user === 'admin',
+    enabled: user !== 'admin',
   })
 
   // console.log(adminList);
-
-  return (
-    <div className='w-full h-[100vh] flex flex-col justify-start items-center pt-14'>
-      {isLoading ? (
-        <SpinnerLoading />
-      ) : (
+  return renderContent({
+    isLoading,
+    isError,
+    errorMess: 'Wystąpił błąd przy wyświetlaniu administatorów.',
+    data: { user, adminList },
+    renderData: ({ user, adminList }) => (
+      <div className='w-full h-[100vh] flex flex-col justify-start items-center pt-14'>
         <div className='w-2/3'>
           <h1 className='text-4xl'>{user !== null ? `Witamy, ${user?.imie} ${user?.nazwisko}.` : 'Witamy.'}</h1>
           <p className='mt-4 text-muted-foreground'>Użyj panelu po lewej stronie do nawigacji.</p>
@@ -45,26 +46,22 @@ export default function Home() {
             {user?.rola !== 'admin' && (
               <div>
                 <p className='mt-4 text-muted-foreground'>Skontaktuj się z administratorami aby poznać szczegóły.</p>
-                {!error ? (
-                  <ul className='mt-2 text-muted-foreground'>
-                    {adminList?.map((admin) => {
-                      return (
-                        <li key={admin.id}>
-                          - {admin.imie} {admin.nazwisko}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                ) : (
-                  <p className='text-destructive'>Wystąpił błąd przy wyświetleniu administatorów.</p>
-                )}
+                <ul className='mt-2 text-muted-foreground'>
+                  {adminList?.map((admin) => {
+                    return (
+                      <li key={admin.id}>
+                        - {admin.imie} {admin.nazwisko}
+                      </li>
+                    )
+                  })}
+                </ul>
               </div>
             )}
           </div>
         </div>
-      )}
-    </div>
-  )
+      </div>
+    ),
+  })
 }
 async function getAdminList() {
   try {

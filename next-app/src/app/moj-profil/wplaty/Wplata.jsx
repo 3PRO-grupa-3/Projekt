@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { getTitleFromWplata } from '../data-acces'
 import { formatDate } from '@/lib/utils'
 import { TableCell, TableRow } from '@/components/ui/table'
 import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
+import { pocketbase } from '@/lib/pocketbase'
 
 export default function Wplata({ wplata }) {
   const {
@@ -29,4 +29,21 @@ export default function Wplata({ wplata }) {
       </TableRow>
     </>
   )
+}
+export async function getTitleFromWplata(idZbiorki) {
+  // console.log(idZbiorki);
+
+  try {
+    const records = await pocketbase.collection('Zbiorki').getFullList({
+      filter: pocketbase.filter(`id ~ {:idZbiorki}`, {
+        idZbiorki: idZbiorki,
+      }),
+    })
+
+    // console.log(records);
+
+    return records
+  } catch (error) {
+    throw new Error(error)
+  }
 }

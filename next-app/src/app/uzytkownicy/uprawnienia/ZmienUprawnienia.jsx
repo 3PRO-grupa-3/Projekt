@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
-import { zmienUprawnienia } from '../data-acces'
 import AdminButton from './AdminButton'
 import UczenButton from './UczenButton'
 import ObserwatorButton from './ObserwatorButton'
+import { pocketbase } from '@/lib/pocketbase'
 
 export default function ZmienUprawnienia({ user }) {
   const queryClient = useQueryClient()
@@ -40,4 +40,13 @@ export default function ZmienUprawnienia({ user }) {
       <ObserwatorButton user={user} uprawnieniaMutation={uprawnieniaMutation} disabled={user.rola === 'obserwator'} />
     </div>
   )
+}
+async function zmienUprawnienia(user, naKogo) {
+  try {
+    // console.log(pocketbase.collection('users'))
+
+    const record = await pocketbase.collection('users').update(user.id, { ...user, rola: naKogo })
+  } catch (error) {
+    throw new Error(error)
+  }
 }

@@ -1,16 +1,13 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
-import { login, register } from '../data-acces'
-import { pocketbase, user } from '@/lib/pocketbase'
+import { pocketbase } from '@/lib/pocketbase'
 import { useRouter } from 'next/navigation'
 import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 import Link from 'next/link'
-import { Label } from '@/components/ui/label'
-import { renderContent } from '@/lib/utils'
 import InputWithLabel from '@/lib/basicComponents/InputWithLabel'
+import { login } from '../login/page'
 export default function page() {
   const router = useRouter()
   const [registerData, setRegisterData] = useState({
@@ -36,7 +33,7 @@ export default function page() {
     },
     onSuccess: () => {
       // console.log('mutation worked')
-      router.push('/lista-zbiorek')
+      router.push('/')
     },
   })
   // react query mutation
@@ -50,7 +47,7 @@ export default function page() {
     },
     onSuccess: async () => {
       // console.log('mutation worked')
-      router.push('/lista-zbiorek')
+      // router.push('/')
 
       await loginMutation.mutateAsync()
     },
@@ -134,4 +131,18 @@ export default function page() {
       </div>
     </div>
   )
+}
+async function register(registerData) {
+  try {
+    const record = await pocketbase.collection('users').create({
+      ...registerData,
+      passwordConfirm: registerData.password,
+      rola: 'obserwator',
+    })
+
+    // (optional) send an email verification request
+    // await pb.collection('users').requestVerification('test@example.com');
+  } catch (error) {
+    throw new Error(error)
+  }
 }

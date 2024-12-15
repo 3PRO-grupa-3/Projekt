@@ -1,6 +1,3 @@
-./data-acces.js
-deklaracja wszystkich funkcji komunikących się z pocketbase
-
 ./page.js
 Zabezpiecza tabele przed użytkownikami, którzy nie są adminami (useEffect)
 Pobiera liste użytkowników (useQuery) oraz renderuje ./SearchTable.jsx (funkcja wyszukiwania)
