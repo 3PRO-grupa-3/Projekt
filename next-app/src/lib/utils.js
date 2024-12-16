@@ -43,7 +43,7 @@ export function renderContent({ isLoading, loadingMess, isError, errorMess, data
   if (isError) {
     return (
       <div className='flex justify-center items-center w-full h-full'>
-        <h1>{errorMess !== null || (undefined && errorMess)}</h1>
+        <h1>{errorMess !== null && errorMess}</h1>
       </div>
     )
   }

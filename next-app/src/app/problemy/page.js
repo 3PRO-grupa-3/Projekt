@@ -27,13 +27,37 @@ export default function page() {
       setProblems(problemsList)
     }
   }, [isSuccess, problemsList])
-  // console.log(problemsList);
 
+  function filterProblems(filter) {
+    setProblems(() => {
+      if (filter === 'Wszystkie') {
+        return problemsList
+      } else if (filter === 'Wykonano') {
+        return problemsList.filter((problem) => problem.wykonano === true)
+      } else if (filter === 'Do zrobienia') {
+        return problemsList.filter((problem) => problem.wykonano === false)
+      } else {
+        throw new Error('Nieprawidłowy filtr')
+      }
+    })
+  }
+  function sortProblems(sort) {
+    setProblems((prevProblems) => {
+      return [...prevProblems].sort((a, b) => {
+        if (sort === 'desc') {
+          return new Date(a.data_utworzenia) - new Date(b.data_utworzenia) // Ascending
+        } else {
+          return new Date(b.data_utworzenia) - new Date(a.data_utworzenia) // Descending
+        }
+      })
+    })
+  }
   return renderContent({
     isLoading,
     isError,
-    data: { problems, problemsList, setProblems },
-    renderData: ({ problems, problemsList, setProblems }) => (
+    errorMess: 'Wystąpił błąd podczas pobierania problemów.',
+    data: { problems, filterProblems, sortProblems },
+    renderData: ({ problems, filterProblems, sortProblems }) => (
       <div className='w-full flex flex-col justify-center items-center pt-14 pb-14'>
         {user?.rola === 'admin' ? (
           <PageTitle
@@ -43,7 +67,7 @@ export default function page() {
         ) : (
           <PageTitle title='Moje problemy' description='Przeglądaj swoje zgłoszone problemy.' />
         )}
-        <FilterProblems setProblems={setProblems} problemList={problemsList} />
+        <FilterProblems filterProblems={filterProblems} sortProblems={sortProblems} />
         <div className='w-2/3 flex flex-col justify-center items-center mt-8 gap-8'>
           {problems?.length === 0 ? (
             <h1>Brak problemów.</h1>
@@ -56,6 +80,10 @@ export default function page() {
   })
 }
 async function getProblems(user) {
+  if (user === null) {
+    throw new Error('Brak danych o użytkowniku, spróbuj zalogować się ponownie')
+  }
+
   pocketbase.autoCancellation(false)
 
   try {
@@ -72,12 +100,10 @@ async function getProblems(user) {
         }),
       })
     }
+
     // Use Promise.all to handle async operations for each problem
     const problemsWithDetails = await Promise.all(
       problemsList.map(async (problem) => {
-        // console.log("loop");
-
-        // Fetch Zbiorka and user details for each problem
         const zbiorkaProblemu = await pocketbase.collection('Zbiorki').getOne(problem.id_zbiorki)
 
         problem.tytulZbiorki = zbiorkaProblemu.Tytul
@@ -90,7 +116,6 @@ async function getProblems(user) {
         return problem
       })
     )
-    // console.log(problemsWithDetails);
 
     pocketbase.autoCancellation(true)
 

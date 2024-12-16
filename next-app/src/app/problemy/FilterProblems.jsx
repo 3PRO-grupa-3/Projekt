@@ -1,22 +1,27 @@
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useEffect, useState } from 'react'
+import { ArrowDown, ArrowUp } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
-export default function FilterProblems({ setProblems, problemList }) {
+export default function FilterProblems({ filterProblems, sortProblems }) {
   const [filter, setFilter] = useState('Wszystkie')
+  const [sort, setSort] = useState('desc')
+  //przechowuje czy renderuje sie po raz pierwszy, jesli tak to nie sortuj ani nie filtruj
+  const isFirstRender = useRef(true)
 
   useEffect(() => {
-    // console.log(filter);
-    setProblems(() => {
-      if (filter === 'Wszystkie') {
-        return problemList
-      } else if (filter === 'Wykonano') {
-        return problemList.filter((problem) => problem.wykonano === true)
-      } else if (filter === 'Do zrobienia') {
-        return problemList.filter((problem) => problem.wykonano === false)
-      }
-    })
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    filterProblems(filter)
+    updateSorting(sort)
   }, [filter])
+
+  function updateSorting(sort) {
+    setSort((prevSortOrder) => (prevSortOrder === 'desc' ? 'asc' : 'desc'))
+    sortProblems(sort)
+  }
 
   return (
     <div className='pt-14 w-2/3 flex flex-row justify-between items-center'>
@@ -31,7 +36,13 @@ export default function FilterProblems({ setProblems, problemList }) {
         </SelectContent>
       </Select>
 
-      <Button disabled>Sort po dacie (todo)</Button>
+      <Button
+        onClick={() => {
+          updateSorting(sort)
+        }}
+      >
+        {sort === 'desc' ? <ArrowDown /> : <ArrowUp />}Data utworzenia
+      </Button>
     </div>
   )
 }

@@ -9,6 +9,7 @@ import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 import { ClipboardCheck } from 'lucide-react'
 import { useUser } from '@/hooks/useUser'
 import UsunProblem from './UsunProblem'
+import { pocketbase } from '@/lib/pocketbase'
 
 export default function Problem({ problem, isRefetching }) {
   const { user } = useUser()
