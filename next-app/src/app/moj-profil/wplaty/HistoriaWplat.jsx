@@ -1,9 +1,16 @@
-import { useQuery } from '@tanstack/react-query'
-import React from 'react'
-import Wplata from './Wplata'
-import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { renderContent } from '@/lib/utils'
-import { pocketbase } from '@/lib/pocketbase'
+import { useQuery } from "@tanstack/react-query";
+import React from "react";
+import Wplata from "./Wplata";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { renderContent } from "@/lib/utils";
+import { pocketbase } from "@/lib/pocketbase";
 
 export default function HistoriaWplat() {
   const {
@@ -11,9 +18,9 @@ export default function HistoriaWplat() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ['listaWplat'],
+    queryKey: ["listaWplat"],
     queryFn: () => getWplaty(),
-  })
+  });
 
   return renderContent({
     isLoading,
@@ -22,10 +29,12 @@ export default function HistoriaWplat() {
     errorMess: null,
     data: wplaty,
     renderData: (wplaty) => (
-      <div className='flex flex-col w-2/3'>
-        <h1 className='text-2xl'>Historia wpłat</h1>
+      <div className="flex flex-col w-2/3">
+        <h1 className="text-2xl">Historia wpłat</h1>
         <Table>
-          <TableCaption>A list of your recent invoices.</TableCaption>
+          <TableCaption className="mb-8">
+            A list of your recent invoices.
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead>Data</TableHead>
@@ -41,15 +50,15 @@ export default function HistoriaWplat() {
         </Table>
       </div>
     ),
-  })
+  });
 }
 export async function getWplaty() {
   try {
-    const records = await pocketbase.collection('wplaty').getFullList({
-      sort: '-data_utworzenia',
-    })
-    return records
+    const records = await pocketbase.collection("wplaty").getFullList({
+      sort: "-data_utworzenia",
+    });
+    return records;
   } catch (error) {
-    throw new Error(error)
+    throw new Error(error);
   }
 }
