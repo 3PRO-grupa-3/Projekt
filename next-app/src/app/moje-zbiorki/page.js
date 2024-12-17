@@ -1,5 +1,6 @@
-"use client"
-import React from 'react'
+'use client';
+
+import React from 'react';
 import { fetchUczen, fetchZbiorki } from './date-acces';
 import { useUser } from '@/hooks/useUser';
 import { useQuery } from '@tanstack/react-query';
@@ -7,7 +8,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
-export default function page() {
+export default function Page() {
   const userInfo = useUser();
   const { data: dataZbiorki } = useQuery({
     queryKey: ['mojeZbiorki'],
@@ -19,10 +20,6 @@ export default function page() {
     queryFn: fetchUczen,
   });
 
-  console.log("data", dataZbiorki);
-  console.log("user", userInfo);
-  console.log("uzytkownik", dataUzytkownik);
-
   const userId = userInfo?.user?.id;
 
   const filteredZbiorki = dataZbiorki?.filter((zbiorka) => {
@@ -30,7 +27,7 @@ export default function page() {
   });
 
   let zbiorkiToDisplay = [];
-  
+
   if (userInfo?.user?.rola === "uczen") {
     zbiorkiToDisplay = filteredZbiorki;
   } else if (userInfo?.user?.rola === "admin") {
@@ -38,22 +35,30 @@ export default function page() {
   }
 
   return (
-    <div>
-      {zbiorkiToDisplay?.map((zbiorka) => (
-        <Link key={`${zbiorka.id}-${zbiorka.Tytul}`} href={`lista-zbiorek/${zbiorka.Tytul}`}>
-          <Card>
-            <CardHeader>
-              <CardTitle>{zbiorka.Tytul}</CardTitle>
-              <CardDescription>{zbiorka.data_utworzenia}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Progress
-                value={(zbiorka.aktualnie_zebrano / zbiorka.cel) * 100}
-              />
-            </CardContent>
-          </Card>
-        </Link>
-      ))}
+    <div className="bg-background text-foreground p-6 min-h-screen">
+      <h1 className="text-3xl font-bold text-primary mb-6">MOJE ZBIÓRKI</h1>
+      {zbiorkiToDisplay?.length > 0 ? (
+        zbiorkiToDisplay.map((zbiorka) => (
+          <Link key={`${zbiorka.id}-${zbiorka.Tytul}`} href={`lista-zbiorek/${zbiorka.Tytul}`}>
+            <div className="border border-muted rounded-lg mb-6 hover:border-primary transition-all">
+              <Card className="bg-card hover:bg-card-hover transition-all rounded-lg">
+                <CardHeader className="bg-input text-primary-foreground rounded-t-lg p-4">
+                  <CardTitle className="text-2xl font-semibold text-destructive-foreground">{zbiorka.Tytul}</CardTitle>
+                  <CardDescription className="text-destructive-foreground text-sm">{zbiorka.data_utworzenia}</CardDescription>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <Progress
+                    value={(zbiorka.aktualnie_zebrano / zbiorka.cel) * 100}
+                    className="bg-primary h-2 rounded-full"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </Link>
+        ))
+      ) : (
+        <h2 className="text-xl text-muted-foreground">Brak zbiórek do których należysz</h2>
+      )}
     </div>
   );
 }

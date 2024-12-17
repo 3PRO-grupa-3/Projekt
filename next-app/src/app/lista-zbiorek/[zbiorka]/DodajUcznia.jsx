@@ -15,145 +15,140 @@ import { addUczenToZbiorkaFinal, fetchUczen, fetchUsers } from "../data-acces";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from '@tanstack/react-query';
 import ConfirmationAlert from "@/lib/basicComponents/ConfirmationAlert";
+import SpinnerLoading from "@/lib/basicComponents/SpinnerLoading";
 
 export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
-  const { data: users,refetch} = useQuery({
+  const queryClient = useQueryClient();
+  const [usersNotInZbiorka, setUsersNotInZbiorka] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const { data: users, refetch, isLoading: isLoadingUsers, error: errorUSers } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
-  const { data: relacjeZbiorka} = useQuery({
+  const { data: relacjeZbiorka, isLoading: isLoadingURelacje, error: errorRelacje } = useQuery({
     queryKey: ["uzytkownicyRelacje"],
-    queryFn: fetchUczen
+    queryFn: fetchUczen,
   });
 
-  const queryClient = useQueryClient();
-
-
-  const [usersNotInZbiorka,setUsersNotInZbiorka] = useState(null)
-  const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-
-    // const allUsersIds = users.map((user) => user.id);
-
-    // const allIdInZbiorka = relacjeZbiorka
-    //     ?.filter((item) => item.id_zbiorki === daneZbiorka.id)
-    //     .map((item) => item.id_ucznia);
-
-    // const allUsersNotInZbiorka = allIdInZbiorka?.map((item)=>allUsersIds!=allIdInZbiorka)
-
-    // setUsersNotInZbiorka(allUsersNotInZbiorka)
-
-    useEffect(() => {
+  useEffect(() => {
+    try {
       if (!users || !relacjeZbiorka || !daneZbiorka) return;
-    
+
       const allUsersIds = users.map((user) => user.id);
-    
+
       const allIdInZbiorka = relacjeZbiorka
         .filter((item) => item.id_zbiorki === daneZbiorka.id)
         .map((item) => item.id_ucznia);
-    
+
       const allUsersNotInZbiorka = allUsersIds.filter(
         (id) => !allIdInZbiorka.includes(id)
       );
-    
+
       const filteredUsers = users.filter((user) =>
         allUsersNotInZbiorka.includes(user.id)
       );
-    
+
       setUsersNotInZbiorka(filteredUsers);
-      // console.log("Users in zbiórka:", allIdInZbiorka);
-      // console.log("Users not in zbiórka:", filteredUsers);
-    }, [users, relacjeZbiorka, daneZbiorka]);
-    
+    } catch (error) {
+      throw new Error(error);
+    }
+  }, [users, relacjeZbiorka, daneZbiorka]);
 
+  if (isLoadingUsers || isLoadingURelacje) {
+    return <SpinnerLoading />;
+  }
 
-    const handleSelect = (user) => {
+  if (errorRelacje || errorUSers) {
+    throw new Error(errorRelacje?.message || errorUSers?.message);
+  }
+
+  const handleSelect = (user) => {
+    try {
       setSelectedUser(user);
-      // console.log("Selected User:", user);
-    };
-    
-    const handleAddStudent = async () => {
-      if (selectedUser && daneZbiorka) {
-        try {
-          await addUczenToZbiorkaFinal(daneZbiorka.id, selectedUser.id);
-    
-          onStudentAdded();
-    
-          setOpen(false);
-          await queryClient.invalidateQueries("uzytkownicyRelacje");
-          await refetch();
-        } catch (error) {
-          console.error("Failed to add student to zbiórka:", error);
-        }
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+
+  const handleAddStudent = async () => {
+    if (selectedUser && daneZbiorka) {
+      try {
+        await addUczenToZbiorkaFinal(daneZbiorka.id, selectedUser.id);
+
+        onStudentAdded();
+
+        setOpen(false);
+        await queryClient.invalidateQueries("uzytkownicyRelacje");
+        await refetch();
+      } catch (error) {
+        throw new Error(error);
       }
-    };
-    
-    
+    }
+  };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {selectedUser
-            ? `${selectedUser.imie} ${selectedUser.nazwisko}`
-            : "Wybierz Ucznia"}
-          <ChevronsUpDown className="opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Wyszukaj ucznia..." />
-          <CommandList>
-            <CommandEmpty>Nie znaleziono ucznia</CommandEmpty>
-            <CommandGroup>
-              {usersNotInZbiorka!=null && usersNotInZbiorka.map((user) => (
-                <CommandItem
-                  key={user.id}
-                  value={`${user.imie} ${user.nazwisko}`}
-                  onSelect={() => handleSelect(user)}
-                >
-                  {`${user.imie} ${user.nazwisko}`}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      selectedUser === user ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-      {/* <Button onClick={handleAddStudent} disabled={!selectedUser}>
-        Dodaj test
-      </Button> */}
+    <div className="flex items-center space-x-4">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[200px] justify-between py-2 px-4 rounded-md text-primary bg-background border border-gray-300 hover:bg-secondary-100 focus:ring-2 focus:ring-primary"
+          >
+            {selectedUser
+              ? `${selectedUser.imie} ${selectedUser.nazwisko}`
+              : "Wybierz Ucznia"}
+            <ChevronsUpDown className="opacity-50" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[250px] p-0 bg-white border rounded-lg shadow-md">
+          <Command>
+            <CommandInput placeholder="Wyszukaj ucznia..." className="p-2 border-b border-gray-300" />
+            <CommandList>
+              <CommandEmpty>Nie znaleziono ucznia</CommandEmpty>
+              <CommandGroup>
+                {usersNotInZbiorka != null && usersNotInZbiorka.map((user) => (
+                  <CommandItem
+                    key={user.id}
+                    value={`${user.imie} ${user.nazwisko}`}
+                    onSelect={() => handleSelect(user)}
+                    className="p-2 hover:bg-gray-200 cursor-pointer"
+                  >
+                    {`${user.imie} ${user.nazwisko}`}
+                    <Check
+                      className={cn(
+                        "ml-auto",
+                        selectedUser === user ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
       <ConfirmationAlert
-              message={"Czy napewno chcesz dodać tego ucznia do zbiórki"}
-              cancelText={"Powrót"}
-              triggerElement={<Button>Dodaj Ucznia</Button>}
-              mutationFn={() => console.log("")}
-              toastError={{
-                variant: "destructive",
-                title: "Nie udało się wykonać polecenia.",
-                description: "Spróbuj ponownie później.",
-              }}
-              toastSucces={{
-                title: "Uczeń został dodany do zbiórki",
-                description: "",
-              }}
-              onSuccesCustomFunc={
-                handleAddStudent
-              }
-            />
-    </Popover>
-
+        message={"Czy na pewno chcesz dodać tego ucznia do zbiórki?"}
+        cancelText={"Powrót"}
+        triggerElement={<Button className="bg-secondary hover:bg-secondary-600 text-white py-2 px-4 rounded-md">Dodaj Ucznia</Button>}
+        mutationFn={() => console.log("")}
+        toastError={{
+          variant: "destructive",
+          title: "Nie udało się wykonać polecenia.",
+          description: "Spróbuj ponownie później.",
+        }}
+        toastSucces={{
+          title: "Uczeń został dodany do zbiórki",
+          description: "",
+        }}
+        onSuccesCustomFunc={handleAddStudent}
+      />
+    </div>
   );
 }
