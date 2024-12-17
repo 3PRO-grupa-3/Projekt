@@ -1,6 +1,7 @@
-const { REST, Routes, SlashCommandBuilder } = require("discord.js")
+import { REST, Routes, SlashCommandBuilder } from "discord.js";
 
-require('dotenv').config();
+import dotenv from 'dotenv'
+dotenv.config();
 
 const BotToken = process.env.TOKEN
 const IdBot = process.env.BOT

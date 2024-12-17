@@ -1,30 +1,25 @@
-require('dotenv').config();
-const PocketBase = require('pocketbase/cjs')
+import dotenv from 'dotenv'
+dotenv.config()
+import{ Client, GatewayIntentBits } from 'discord.js';
 
-const pb = new PocketBase('https://pb.wama.zbiorki.zs1mm.edu.pl');
-
-const { Client, GatewayIntentBits} = require('discord.js');
 const client = new Client({
     intents: [
-        GatewayIntentBits.Guilds, 
-        GatewayIntentBits.GuildMessages, 
-        GatewayIntentBits.MessageContent 
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
     ],
 });
+
 const targetHour = 16;
 const targetMinute = 10;
 const channelId = process.env.CHANNEL;
-const messageContent = "@everyone" + "przypominam o zbiorce";
+const messageContent = "@everyone przypominam o zbiórce";
 
-client.on("ready", () => {
 
- console.log(`Logged in as ${client.user.tag}!`)
-
- const sendMessageAtTargetTime = () => {
-
+const sendMessageAtTargetTime = () => {
     const now = new Date();
     const targetTime = new Date(now);
-    
+
     targetTime.setHours(targetHour, targetMinute, 0, 0);
 
     if (targetTime < now) {
@@ -32,54 +27,52 @@ client.on("ready", () => {
     }
 
     const delay = targetTime.getTime() - now.getTime();
-    console.log(`Powiadomienie zostanie wysłane o godzinie 16:10, za ${delay / 1000} sekund`);
+    
+    console.log(`Powiadomienie zostanie wysłane o godzinie ${targetHour}:${targetMinute}, za ${Math.round(delay / 1000)} sekund.`);
 
     setTimeout(() => {
         const channel = client.channels.cache.get(channelId);
+        console.log('channel', channel);
+        
         if (channel) {
-            channel.send(messageContent).then(() => {
-                console.log(`Wiadomość wysłana!`);
-            }).catch(err => {
-                console.error('Błąd wysyłania wiadomości:', err);
-            });
+            channel.send(messageContent)
+                .then(() => console.log("Wiadomość została wysłana!"))
+                .catch(err => console.error("Błąd przy wysyłaniu wiadomości:", err));
         } else {
-            console.error('Nie znaleziono kanału!');
+            console.error("Nie znaleziono kanału Discord.");
         }
 
+    
         setInterval(() => {
-            channel.send(messageContent).then(() => {
-                console.log(`Wiadomość wysłana!`);
-            }).catch(err => {
-                console.error('Błąd wysyłania wiadomości:', err);
-            });
+            channel.send(messageContent)
+                .then(() => console.log("Codzienna wiadomość została wysłana!"))
+                .catch(err => console.error("Błąd przy wysyłaniu codziennej wiadomości:", err));
         }, 24 * 60 * 60 * 1000);
     }, delay);
 };
-sendMessageAtTargetTime();
 
 client.on("interactionCreate", async (interaction) => {
-    if(interaction.isCommand()){
-        if(interaction.commandName === "list"){
-            const textReceived = interaction.options.getString("category")
-            interaction.reply({content: `${textReceived}`})
+    if (interaction.isCommand()) {
+        if (interaction.commandName === "list") {
+            const textReceived = interaction.options.getString("category") || "brak kategorii";
+            interaction.reply({ content: `${textReceived}` });
         }
     }
-})
+});
 
-client.on('messageCreate', async (message) => {
-    if (message.content === 'uczniowie') {
-      try {
-        const records = await pb.collection('uczniowie').getList(1, 10);
-        if (!records || !records.items.length) {
-          console.log('No records found');
-          message.channel.send('No records found.');
-        } else {
-          message.channel.send(`Fetched data from PocketBase: ${JSON.stringify(records.items)}`);
-        }
-      } catch (error) {
-        message.channel.send(`Error: ${error.message}`);
-      }
+
+
+client.on("ready", () => {
+    console.log(`Zalogowano jako ${client.user.tag}!`);
+    const channel = client.channels.cache.get(channelId);
+
+    if (channel) {
+        console.log("Kanał Discord znaleziony:", channel.name);
+    } else {
+        console.error("Nie znaleziono kanału. Sprawdź ID kanału.");
     }
-  });
-})
-client.login(process.env.TOKEN);
+
+    sendMessageAtTargetTime();
+});
+
+client.login(process.env.TOKEN)
