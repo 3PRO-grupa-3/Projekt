@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchWplaty, potwierdzWplate } from '../data-acces';
 import { Button } from '@/components/ui/button';
@@ -19,8 +19,24 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
     queryKey: ['wplaty'],
     queryFn: fetchWplaty,
   });
-
   const [paymentStatus, setPaymentStatus] = useState({});
+  const [metodaPlatnosci, setMetodaPlatnosci] = useState(null);
+  const [disabledUseState, setDisabledUseState] = useState(true);
+  const [buttonToRegisterWplata,setButtonToRegisterWplata] = useState(false)
+
+  const handleMetodaPlatnosci = (metodaPlatnosci) => {
+    setMetodaPlatnosci(metodaPlatnosci);
+    setDisabledUseState(false);
+  };
+
+  useEffect(() => {
+    if (userInfo?.user) {
+      const userPayment = daneWplaty?.find((payment) => payment.id_ucznia === userInfo.user.id);
+      if (userPayment==false) {
+        buttonToRegisterWplata(true) 
+      }
+    }
+  }, [userInfo, daneWplaty]);
 
   const handleConfirmPayment = (wplata) => {
     potwierdzWplate(wplata.id);
@@ -28,14 +44,6 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
       ...prevStatus,
       [wplata.id]: true,
     }));
-  };
-
-  const [metodaPlatnosci, setMetodaPlatnosci] = useState(null);
-  const [disabledUseState, setDisabledUseState] = useState(true);
-
-  const handleMetodaPlatnosci = (metodaPlatnosci) => {
-    setMetodaPlatnosci(metodaPlatnosci);
-    setDisabledUseState(false);
   };
 
   return (
@@ -47,7 +55,6 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
           const wplata = daneWplaty?.find(
             (payment) => payment.id_ucznia === tenUczen.id_ucznia && payment.id_zbiorki === daneZbiorka.id
           );
-
           return (
             <Card key={tenUczen.id}>
               <CardHeader>
@@ -95,8 +102,28 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
                     )}
                   </div>
                 ) : (
-                  <p>Brak płatności</p>
+                  daneWplaty && daneWplaty.map((taWplata) => {
+                    if (taWplata?.id_zbiorki === daneZbiorka.id && taWplata.id_ucznia !== userInfo.user.id) {
+                      return;
+                    }
+                  })
                 )}
+                {buttonToRegisterWplata ? <ConfirmationAlert
+                          message="Czy na pewno chcesz zarejestrować wpłate?"
+                          cancelText="Powrót"
+                          triggerElement={<Button>Zarejestruj zapłate</Button>}
+                          mutationFn={() => console.log("")}
+                          toastError={{
+                            variant: 'destructive',
+                            title: 'Nie udało się wykonać polecenia.',
+                            description: 'Spróbuj ponownie później.',
+                          }}
+                          toastSucces={{
+                            title: 'Wpłata została zarejestrowana',
+                            description: '',
+                          }}
+                          onSuccesCustomFunc={() => addNewWplata(daneZbiorka.id,userInfo.user.id,daneZbiorka.cena_na_ucznia)}
+                        /> : (<p>test</p>)}
               </CardContent>
             </Card>
           );
@@ -106,6 +133,7 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
     </div>
   );
 }
+
 
 //na pozniej do zrobienia: jesli jestem zalogowany jako uzytkownik i wchodze do danej zbiorki to moge przy moim uzytkowniku w liscie uczniowie kliknac guzik WYSLIJ REQUEST DO WPLATY wtedy
 //w bazie danych pojawi sie pusta wplata z wplacono jako false i typ platnosci null, wtedy admin bedzie mogl potwierdzic ta wplate i sigma
