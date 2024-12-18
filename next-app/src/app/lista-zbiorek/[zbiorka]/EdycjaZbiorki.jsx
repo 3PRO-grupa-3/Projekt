@@ -37,7 +37,7 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
         typZbiorki: daneZbiorka.tryb,
       })
     } catch (error) {
-      throw new Error(error)
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     }
   }, [daneZbiorka])
 
@@ -49,7 +49,7 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
         [field]: value,
       }))
     } catch (error) {
-      throw new Error(error)
+      return <h1 className='text-destructive'>ERROR przy zapisywaniu danych wpisanych: {error}</h1>
     }
   }
 
@@ -65,9 +65,8 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
 
       router.push(finalZbiorka.tytul)
       await editZbiorkaFinal(daneZbiorka.id, finalZbiorka)
-    } catch (err) {
-      throw new Error(err)
-    } finally {
+    } catch (error) {
+      return <h1 className='text-destructive'>ERROR podczas aktualizowania danych zbiórki: {error}</h1>
     }
   }
 
@@ -137,12 +136,16 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            className="bg-secondary hover:bg-primary-600 text-white py-2 px-6 rounded-md"
+            className="bg-secondary hover:bg-primary-600 text-white py-2 px-6 rounded-md h-[60px]"
             type="submit"
           >
-            Zapisz zmiany
+            <div className="text-center">
+              <h1 className="text-xl font-semibold">Zapisz zmiany</h1>
+              <h3 className="text-sm text-muted-foreground mt-1">Tej akcji nie da się cofnąć</h3>
+            </div>
           </Button>
         </DialogFooter>
+
       </DialogContent>
     </Dialog>
   )

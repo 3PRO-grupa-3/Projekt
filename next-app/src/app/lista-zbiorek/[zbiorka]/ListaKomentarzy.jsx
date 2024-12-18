@@ -18,7 +18,9 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
     queryFn: fetchUczen,
   });
   const [isCurrentUser,setIsCurrentUser] = useState(null)
+  
   useEffect(() => {
+    try{
     if (daneRelacje && userInfo?.user) {
       daneRelacje.map((relacja) => {
         if (
@@ -28,6 +30,9 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
           setIsCurrentUser(true)
         }else(setIsCurrentUser(false))
       });
+    }}
+    catch{
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     }
   }, [daneRelacje, daneZbiorka.id, userInfo?.user?.id]);
   
@@ -44,7 +49,7 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
       refetch();
       setKomentarzInputValue('');
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR przy dodawaniu komentarza: {error}</h1>
     }
   };
 
@@ -53,7 +58,7 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
       await deleteKomentarzFinal(komentarz.id);
       refetch();
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR przy usuwaniu komentarza: {error}</h1>
     }
   };
 
@@ -62,7 +67,7 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
   }
 
   if (error) {
-    throw new Error(error);
+    return <h1 className='text-destructive'>ERROR {error}</h1>
   }
 
   return (
@@ -133,8 +138,9 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
                     {(userInfo?.user?.rola === 'admin' || user?.id === userInfo?.user?.id) && (
                       <ConfirmationAlert
                         message="Czy na pewno chcesz usunąć ten komentarz?"
+                        description={'Tej akcji nie da się cofnąć'}
                         cancelText="Powrót"
-                        triggerElement={<Button className="bg-danger hover:bg-danger-600 text-white">Usuń Komentarz</Button>}
+                        triggerElement={<Button className="bg-destructive hover:bg-danger-600 text-white">Usuń Komentarz</Button>}
                         mutationFn={() => console.log('')}
                         toastError={{
                           variant: 'destructive',

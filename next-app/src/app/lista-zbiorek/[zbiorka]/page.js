@@ -36,7 +36,7 @@ export default function Page({ params }) {
       await zakonczZbiorkeFinal(daneZbiorka.id, daneZbiorka.Tytul);
       refetch();
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR: przy zakończeniu zbiórki</h1>
     }
   };
 
@@ -55,7 +55,7 @@ export default function Page({ params }) {
       case 'dodajUcznia':
         return dodajUcznia();
       default:
-        throw new Error('Unknown action');
+        return <h1 className='text-destructive'>ERROR</h1>
     }
   };
 
@@ -64,7 +64,7 @@ export default function Page({ params }) {
     onSuccess: () => {
     },
     onError: (error) => {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     },
   });
 
@@ -72,9 +72,9 @@ export default function Page({ params }) {
     return <SpinnerLoading />;
   }
 
-  // if (errorZbiorka || errorUczniowie || errorUzytkownik) {
-  //   throw new Error(errorZbiorka?.message || errorUczniowie?.message || errorUzytkownik?.message)
-  // }
+  if (errorZbiorka || errorUczniowie || errorUzytkownik) {
+    return <h1 className='text-destructive'>ERROR podczas pobierania danych</h1>
+  }
 
   return (
     <div className="bg-background text-foreground p-6 min-h-screen">
@@ -98,10 +98,10 @@ export default function Page({ params }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <p className="text-lg text-muted-foreground">
-                  <span className="font-semibold">Cena na ucznia:</span> {daneZbiorka?.cena_na_ucznia}
+                  <span className="font-semibold">Cena na ucznia:</span> {daneZbiorka?.cena_na_ucznia} PLN
                 </p>
                 <p className="text-lg text-muted-foreground">
-                  <span className="font-semibold">Cel:</span> {daneZbiorka?.cel}
+                  <span className="font-semibold">Cel:</span> {daneZbiorka?.cel} PLN
                 </p>
                 <p className="text-lg text-muted-foreground">
                   <span className="font-semibold">Tryb:</span> {daneZbiorka?.tryb}

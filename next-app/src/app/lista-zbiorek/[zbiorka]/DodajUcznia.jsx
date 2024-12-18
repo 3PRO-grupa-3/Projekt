@@ -22,6 +22,7 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
   const [usersNotInZbiorka, setUsersNotInZbiorka] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isLoadingAddStudent, setIsLoadingAddStudent] = useState(false); // Track loading for adding student
 
   const { data: users, refetch, isLoading: isLoadingUsers, error: errorUSers } = useQuery({
     queryKey: ["users"],
@@ -54,7 +55,7 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
 
       setUsersNotInZbiorka(finalUsers);
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     }
   }, [users, relacjeZbiorka, daneZbiorka]);
 
@@ -63,20 +64,21 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
   }
 
   if (errorRelacje || errorUSers) {
-    throw new Error(errorRelacje?.message || errorUSers?.message);
+    return <h1 className='text-destructive'>ERROR {error}</h1>
   }
 
   const handleSelect = (user) => {
     try {
       setSelectedUser(user);
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     }
   };
 
   const handleAddStudent = async () => {
     if (selectedUser && daneZbiorka) {
       try {
+        setIsLoadingAddStudent(true);
         await addUczenToZbiorkaFinal(daneZbiorka.id, selectedUser.id);
 
         onStudentAdded();
@@ -85,7 +87,9 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
         await queryClient.invalidateQueries("uzytkownicyRelacje");
         await refetch();
       } catch (error) {
-        throw new Error(error);
+        return <h1 className='text-destructive'>ERROR podczas dodawania ucznia: {error}</h1>
+      } finally {
+        setIsLoadingAddStudent(false);
       }
     }
   };
@@ -136,8 +140,17 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
 
       <ConfirmationAlert
         message={"Czy na pewno chcesz dodać tego ucznia do zbiórki?"}
+        description={'Tej akcji nie da się cofnąć'}
         cancelText={"Powrót"}
-        triggerElement={<Button className="bg-secondary hover:bg-secondary-600 text-white py-2 px-4 rounded-md">Dodaj Ucznia</Button>}
+        triggerElement={
+          <Button
+            className="bg-secondary hover:bg-secondary-600 text-white py-2 px-4 rounded-md"
+            disabled={isLoadingAddStudent || !selectedUser}
+          >
+            {isLoadingAddStudent ? <SpinnerLoading /> : "Dodaj Ucznia"}
+          </Button>
+        }
+        
         mutationFn={() => console.log("")}
         toastError={{
           variant: "destructive",
