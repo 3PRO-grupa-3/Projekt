@@ -21,7 +21,7 @@ export default function Page() {
   });
 
   if (isLoading) return <SpinnerLoading />;
-  if (error) throw new Error(error);
+  if (error) return <h1 className='text-destructive'>ERROR</h1>
 
   const publiczneZbiorki = data?.filter((zbiorka) => zbiorka?.tryb === 'publiczna');
 
@@ -39,6 +39,11 @@ export default function Page() {
           .toISOString()
           .slice(0, 16)
           .replace('T', ' ')}</CardDescription>
+              {zbiorka.status === false && (
+                <h1 className="text-white bg-destructive text-lg font-semibold p-2 rounded-md mt-2">
+                  Zbiórka jest zakończona
+                </h1>
+              )}
                 </CardHeader>
                 <CardContent className="p-4">
                   <Progress

@@ -27,6 +27,7 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
   });
   const [isCurrentUser,setIsCurrentUser] = useState(null)
   useEffect(() => {
+    try{
     if (daneRelacje && userInfo?.user) {
       daneRelacje.map((relacja) => {
         if (
@@ -36,6 +37,8 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
           setIsCurrentUser(true)
         }else(setIsCurrentUser(false))
       });
+    }}catch(error){
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     }
   }, [daneRelacje, daneZbiorka.id, userInfo?.user?.id]);
   
@@ -44,7 +47,7 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
     try {
       setProblemInputValue(e.target.value);
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     }
   };
 
@@ -52,7 +55,7 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
     try {
       await addNewProblem(daneZbiorka.id, userInfo.user.id, problemInputValue);
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR podczas dodawania problemu: {error}</h1>
     }
   };
 

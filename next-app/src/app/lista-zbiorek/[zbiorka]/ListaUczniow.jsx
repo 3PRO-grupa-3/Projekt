@@ -30,7 +30,8 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
       setMetodaPlatnosci(value);
       setDisabledUseState(false);
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR {error}</h1>
+
     }
   };
 
@@ -43,7 +44,7 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
         setButtonToRegisterWplata(!userPaymentExists);
       }
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR {error}</h1>
     }
   }, [userInfo, daneWplaty]);
 
@@ -57,7 +58,7 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
         [wplata.id]: true,
       }));
     } catch (error) {
-      throw new Error(error);
+      return <h1 className='text-destructive'>ERROR podczas potwierdzania wpłaty: {error}</h1>
     }
   };
 
@@ -66,7 +67,7 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
   }
 
   if (error) {
-    throw new Error(error);
+    return <h1 className='text-destructive'>ERROR {error}</h1>
   }
 
   return (
