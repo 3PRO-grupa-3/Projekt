@@ -2,6 +2,7 @@ import ConfirmationAlert from '@/lib/basicComponents/ConfirmationAlert'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import React from 'react'
 import { Button } from '@/components/ui/button'
+import { pocketbase } from '@/lib/pocketbase'
 
 export default function UsunProblem({ problem }) {
   const queryClient = useQueryClient()

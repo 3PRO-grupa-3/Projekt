@@ -1,4 +1,5 @@
 'use client'
+import useAuth from '@/hooks/useAuth'
 import { useUser } from '@/hooks/useUser'
 import { pocketbase } from '@/lib/pocketbase'
 import { renderContent } from '@/lib/utils'

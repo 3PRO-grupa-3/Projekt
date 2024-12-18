@@ -1,37 +1,27 @@
 'use client'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useQuery } from '@tanstack/react-query'
 import SearchTable from './SearchTable'
-import { useRouter } from 'next/navigation'
-import { useUser } from '@/hooks/useUser'
 import PageTitle from '@/lib/basicComponents/PageTitle'
 import { renderContent } from '@/lib/utils'
 import { pocketbase } from '@/lib/pocketbase'
+import useAuth from '@/hooks/useAuth'
 
 export default function page() {
-  const router = useRouter()
-  const { user } = useUser()
-
-  useEffect(() => {
-    if (user) {
-      // console.log(user?.rola);
-      if (user?.rola !== 'admin') {
-        router.push('/')
-      }
-    }
-  }, [user, router])
+  const { isAuthorized } = useAuth({ userRolesWithAccess: ['admin'] })
 
   const {
     data: users,
-    isLoading,
+    isLoading: usersLoading,
     isError,
   } = useQuery({
     queryKey: ['listOfUsers'],
     queryFn: () => getUsers(),
+    enabled: isAuthorized,
   })
 
   return renderContent({
-    isLoading,
+    isLoading: usersLoading,
     isError,
     data: users,
     renderData: (users) => (

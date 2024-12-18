@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 export function useUser() {
   const router = useRouter()
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(undefined)
 
   useEffect(() => {
     setUser(pocketbase.authStore.record)

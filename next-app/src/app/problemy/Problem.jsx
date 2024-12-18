@@ -3,19 +3,30 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate } from '@/lib/utils'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import ConfirmationAlert from '@/lib/basicComponents/ConfirmationAlert'
 import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 import { ClipboardCheck } from 'lucide-react'
 import { useUser } from '@/hooks/useUser'
 import UsunProblem from './UsunProblem'
 import { pocketbase } from '@/lib/pocketbase'
+import { getTitleFromWplata } from '../moj-profil/wplaty/Wplata'
 
 export default function Problem({ problem, isRefetching }) {
   const { user } = useUser()
   const queryClient = useQueryClient()
+  const {
+    data: tytulZbiorki,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['tytulZbiorki', `${problem.id_zbiorki}`],
+    queryFn: () => getTitleFromWplata(problem.id_zbiorki),
+    enabled: !!problem.id_zbiorki,
+    refetchOnWindowFocus: false, // Disable refetching when window is refocused
+  })
+  // console.log('problem', problem.id, 'tytul zbiorki', tytulZbiorki?.[0]?.Tytul)
 
-  // Define the mutation to mark the problem as completed
   const mutation = useMutation({
     mutationFn: async () => await wykonano(problem),
     onSuccess: async () => {
@@ -29,8 +40,15 @@ export default function Problem({ problem, isRefetching }) {
   return (
     <Card className='w-full border-none'>
       <CardHeader>
-        <CardTitle>
-          {problem.imieUcznia} {problem.nazwiskoUcznia}
+        <CardTitle className='flex flex-row gap-2'>
+          {problem.imieUcznia} {problem.nazwiskoUcznia} -{' '}
+          {isLoading ? (
+            <SpinnerLoading />
+          ) : !isError ? (
+            `(${tytulZbiorki?.[0]?.Tytul})`
+          ) : (
+            <p>Brak tytułu zbiórki (Błąd)</p>
+          )}
         </CardTitle>
         <CardDescription>{formatDate(problem.data_utworzenia)}</CardDescription>
       </CardHeader>

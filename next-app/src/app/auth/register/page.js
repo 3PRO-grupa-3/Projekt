@@ -8,6 +8,8 @@ import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 import Link from 'next/link'
 import InputWithLabel from '@/lib/basicComponents/InputWithLabel'
 import { login } from '../login/page'
+import { toast } from '@/hooks/use-toast'
+
 export default function page() {
   const router = useRouter()
   const [registerData, setRegisterData] = useState({
@@ -29,7 +31,8 @@ export default function page() {
       })
     },
     onError: (error) => {
-      console.log('Error occurred:', error)
+      // console.log('Error occurred:', error)
+      toast({ title: 'Wystąpił błąd', variant: 'destructive' })
     },
     onSuccess: () => {
       // console.log('mutation worked')
@@ -43,7 +46,9 @@ export default function page() {
       await register(registerData)
     },
     onError: (error) => {
-      console.log('Error occurred:', error)
+      toast({ title: 'Wystąpił błąd', variant: 'destructive' })
+
+      // console.log('Error occurred:', error)
     },
     onSuccess: async () => {
       // console.log('mutation worked')
