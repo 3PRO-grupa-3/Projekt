@@ -72,9 +72,9 @@ export default function Page({ params }) {
     return <SpinnerLoading />;
   }
 
-  if (errorZbiorka || errorUczniowie || errorUzytkownik) {
-    throw new Error(errorZbiorka?.message || errorUczniowie?.message || errorUzytkownik?.message)
-  }
+  // if (errorZbiorka || errorUczniowie || errorUzytkownik) {
+  //   throw new Error(errorZbiorka?.message || errorUczniowie?.message || errorUzytkownik?.message)
+  // }
 
   return (
     <div className="bg-background text-foreground p-6 min-h-screen">
@@ -82,7 +82,14 @@ export default function Page({ params }) {
         <Card className="mb-6 bg-card rounded-lg shadow-md">
           <CardHeader className="bg-input text-primary-foreground p-4 rounded-t-lg">
             <CardTitle className="text-2xl font-semibold text-primary">{daneZbiorka?.Tytul}</CardTitle>
-            <CardDescription className="text-muted text-sm">{daneZbiorka?.data_zakonczenia}</CardDescription>
+            <CardDescription className="text-primary text-sm">Data Utworzenia: {new Date(daneZbiorka?.data_utworzenia)
+          .toISOString()
+          .slice(0, 16)
+          .replace('T', ' ')}</CardDescription>
+            <CardDescription className="text-primary text-sm">Data Zakończenia: {new Date(daneZbiorka?.data_zakonczenia)
+          .toISOString()
+          .slice(0, 16)
+          .replace('T', ' ')}</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
             <div className="mb-4">

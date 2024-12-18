@@ -63,10 +63,10 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
         typZbiorki: editZbiorka.typZbiorki || daneZbiorka.tryb,
       }
 
-      await editZbiorkaFinal(daneZbiorka.id, finalZbiorka)
       router.push(finalZbiorka.tytul)
+      await editZbiorkaFinal(daneZbiorka.id, finalZbiorka)
     } catch (err) {
-      throw new Error(error)
+      throw new Error(err)
     } finally {
     }
   }
@@ -137,7 +137,7 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
         <DialogFooter>
           <Button
             onClick={handleSubmit}
-            className="bg-primary hover:bg-primary-600 text-white py-2 px-6 rounded-md"
+            className="bg-secondary hover:bg-primary-600 text-white py-2 px-6 rounded-md"
             type="submit"
           >
             Zapisz zmiany

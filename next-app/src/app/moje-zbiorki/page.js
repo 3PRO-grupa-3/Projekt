@@ -49,7 +49,6 @@ export default function Page() {
                 <CardContent className="p-4">
                   <Progress
                     value={(zbiorka.aktualnie_zebrano / zbiorka.cel) * 100}
-                    className="bg-primary h-2 rounded-full"
                   />
                 </CardContent>
               </Card>

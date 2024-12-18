@@ -127,3 +127,12 @@ export async function addNewWplata(zbiorkaId,autorId,zbiorkaKwota) {
     throw new Error(error);
   }
 }
+
+export async function editZbiorkaAktZebr(zbiorkaID,zebranoUpdated) {
+  try {
+    const data = { aktualnie_zebrano: zebranoUpdated };
+    await pocketbase.collection('Zbiorki').update(zbiorkaID, data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}

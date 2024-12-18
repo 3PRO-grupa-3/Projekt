@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { addNewWplata, fetchWplaty, potwierdzWplate } from '../data-acces';
+import { addNewWplata, editZbiorkaAktZebr, fetchWplaty, potwierdzWplate } from '../data-acces';
 import { Button } from '@/components/ui/button';
 import ConfirmationAlert from '@/lib/basicComponents/ConfirmationAlert';
 import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading';
@@ -38,7 +38,7 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
     try {
       if (userInfo?.user) {
         const userPaymentExists = daneWplaty?.some(
-          (payment) => payment.id_ucznia === userInfo.user.id
+          (payment) => payment.id_ucznia === userInfo.user.id && payment.id_zbiorki === daneZbiorka.id
         );
         setButtonToRegisterWplata(!userPaymentExists);
       }
@@ -50,6 +50,8 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
   const handleConfirmPayment = (wplata) => {
     try {
       potwierdzWplate(wplata.id, metodaPlatnosci);
+      const updatedValue = daneZbiorka.aktualnie_zebrano + daneZbiorka.cena_na_ucznia
+      editZbiorkaAktZebr(daneZbiorka.id,updatedValue)
       setPaymentStatus((prevStatus) => ({
         ...prevStatus,
         [wplata.id]: true,
@@ -68,7 +70,7 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
   }
 
   return (
-    <div className="bg-background text-foreground p-6 min-h-screen">
+    <div className="bg-background text-foreground p-6">
       <h1 className="text-3xl font-semibold text-primary mb-6">Uczniowie</h1>
       {daneUczen[0] != null ? (
         daneUczen?.map((tenUczen) => {
@@ -81,13 +83,11 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
             );
 
             const isCurrentUser = tenUczen.id_ucznia === userInfo?.user?.id;
-            
-            // Set the border color based on payment status
             const borderColor = paymentStatus[wplata?.id] || wplata?.wplacono 
-              ? 'border-green-500' // Paid
+              ? 'border-green-500'
               : isCurrentUser
-              ? 'border-yellow-500' // Pending registration
-              : 'border-red-500'; // Not paid
+              ? 'border-yellow-500'
+              : 'border-red-500';
 
             return (
               <Card key={tenUczen.id} className={`mb-6 bg-card rounded-lg shadow-md border-4-${borderColor}`}>
@@ -97,73 +97,79 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  {wplata ? (
-                    <div className="space-y-4">
-                      <p className="text-lg">Data Zapłaty: {wplata.data_utworzenia}</p>
-                      {paymentStatus[wplata.id] || wplata.wplacono ? (
-                        <p className="text-green-500">Status Płatności: Zapłacono</p>
-                      ) : userInfo?.user?.rola === 'admin' ? (
-                        <div className="space-y-4">
-                          <Select onValueChange={handleMetodaPlatnosci}>
-                            <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="Wybierz metodę płatności" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="gotowka">Gotówka</SelectItem>
-                              <SelectItem value="karta">Karta</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <ConfirmationAlert
-                            message="Czy na pewno chcesz potwierdzić tę płatność?"
-                            cancelText="Powrót"
-                            triggerElement={(
-                              <Button disabled={disabledUseState} className="w-full bg-secondary text-ring hover:bg-primary-500">
-                                Potwierdź zapłatę
-                              </Button>
-                            )}
-                            mutationFn={() => handleConfirmPayment(wplata)}
-                            toastError={{
-                              variant: 'destructive',
-                              title: 'Błąd',
-                              description: 'Nie udało się potwierdzić wpłaty.',
-                            }}
-                            toastSucces={{
-                              title: 'Sukces',
-                              description: 'Wpłata potwierdzona.',
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <p className="text-yellow-500">Status Płatności: Nie Potwierdzono Zapłaty</p>
-                      )}
-                    </div>
-                  ) : isCurrentUser ? (
-                    buttonToRegisterWplata ? (
-                      <ConfirmationAlert
-                        message="Czy na pewno chcesz zarejestrować wpłatę?"
-                        cancelText="Powrót"
-                        triggerElement={(
-                          <Button className="w-full bg-secondary text-ring hover:bg-primary-500">Zarejestruj zapłatę</Button>
-                        )}
-                        mutationFn={() => addNewWplata(daneZbiorka.id, userInfo.user.id, daneZbiorka.cena_na_ucznia)}
-                        toastError={{
-                          variant: 'destructive',
-                          title: 'Błąd',
-                          description: 'Nie udało się zarejestrować wpłaty.',
-                        }}
-                        toastSucces={{
-                          title: 'Sukces',
-                          description: 'Wpłata zarejestrowana.',
-                        }}
-                        onSuccesCustomFunc={() => setButtonToRegisterWplata(false)}
-                      />
-                    ) : (
-                      <p className="text-yellow-500">Status Płatności: Nie Potwierdzono Zapłaty</p>
-                    )
-                  ) : (
-                    <p className="text-red-500">Status Płatności: Nie zapłacono</p>
-                  )}
-                </CardContent>
+  {wplata ? (
+    <div className="space-y-4">
+      <p className="text-lg">
+        Data Zapłaty: {new Date(wplata.data_utworzenia)
+          .toISOString()
+          .slice(0, 16)
+          .replace('T', ' ')}
+      </p>
+      {paymentStatus[wplata.id] || wplata.wplacono ? (
+        <p className="text-green-500">Status Płatności: Zapłacono</p>
+      ) : userInfo?.user?.rola === 'admin' ? (
+        <div className="space-y-4">
+          <Select onValueChange={handleMetodaPlatnosci}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Wybierz metodę płatności" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="gotowka">Gotówka</SelectItem>
+              <SelectItem value="karta">Karta</SelectItem>
+            </SelectContent>
+          </Select>
+          <ConfirmationAlert
+            message="Czy na pewno chcesz potwierdzić tę płatność?"
+            cancelText="Powrót"
+            triggerElement={(
+              <Button disabled={disabledUseState} className="w-full bg-secondary text-ring hover:bg-primary-500">
+                Potwierdź zapłatę
+              </Button>
+            )}
+            mutationFn={() => handleConfirmPayment(wplata)}
+            toastError={{
+              variant: 'destructive',
+              title: 'Błąd',
+              description: 'Nie udało się potwierdzić wpłaty.',
+            }}
+            toastSucces={{
+              title: 'Sukces',
+              description: 'Wpłata potwierdzona.',
+            }}
+          />
+        </div>
+      ) : (
+        <p className="text-yellow-500">Status Płatności: Nie Potwierdzono Zapłaty</p>
+      )}
+    </div>
+  ) : isCurrentUser ? (
+    buttonToRegisterWplata ? (
+      <ConfirmationAlert
+        message="Czy na pewno chcesz zarejestrować wpłatę?"
+        cancelText="Powrót"
+        triggerElement={(
+          <Button className="w-full bg-secondary text-ring hover:bg-primary-500">Zarejestruj zapłatę</Button>
+        )}
+        mutationFn={() => addNewWplata(daneZbiorka.id, userInfo.user.id, daneZbiorka.cena_na_ucznia)}
+        toastError={{
+          variant: 'destructive',
+          title: 'Błąd',
+          description: 'Nie udało się zarejestrować wpłaty.',
+        }}
+        toastSucces={{
+          title: 'Sukces',
+          description: 'Wpłata zarejestrowana.',
+        }}
+        onSuccesCustomFunc={() => setButtonToRegisterWplata(false)}
+      />
+    ) : (
+      <p className="text-yellow-500">Status Płatności: Nie Potwierdzono Zapłaty</p>
+    )
+  ) : (
+    <p className="text-red-500">Status Płatności: Nie zapłacono</p>
+  )}
+</CardContent>
+
               </Card>
             );
           }

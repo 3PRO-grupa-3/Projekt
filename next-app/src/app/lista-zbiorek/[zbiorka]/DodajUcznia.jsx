@@ -50,8 +50,9 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
       const filteredUsers = users.filter((user) =>
         allUsersNotInZbiorka.includes(user.id)
       );
+      const finalUsers = filteredUsers.filter((user) => user.rola === "uczen");
 
-      setUsersNotInZbiorka(filteredUsers);
+      setUsersNotInZbiorka(finalUsers);
     } catch (error) {
       throw new Error(error);
     }

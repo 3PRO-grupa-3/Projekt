@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import React, { useState } from 'react';
-import { addNewKomentarz, deleteKomentarzFinal, fetchKomentarze } from '../data-acces';
+import React, { useEffect, useState } from 'react';
+import { addNewKomentarz, deleteKomentarzFinal, fetchKomentarze, fetchUczen } from '../data-acces';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import ConfirmationAlert from '@/lib/basicComponents/ConfirmationAlert';
 import { Label } from '@/components/ui/label';
@@ -13,15 +13,31 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
     queryKey: ['komentarze'],
     queryFn: fetchKomentarze,
   });
-
+  const { data: daneRelacje} = useQuery({
+    queryKey: ['kluuczk'],
+    queryFn: fetchUczen,
+  });
+  const [isCurrentUser,setIsCurrentUser] = useState(null)
+  useEffect(() => {
+    if (daneRelacje && userInfo?.user) {
+      daneRelacje.map((relacja) => {
+        if (
+          relacja.id_zbiorki === daneZbiorka.id &&
+          relacja.id_ucznia === userInfo.user.id
+        ) {
+          setIsCurrentUser(true)
+        }else(setIsCurrentUser(false))
+      });
+    }
+  }, [daneRelacje, daneZbiorka.id, userInfo?.user?.id]);
+  
+  
   const [komentarzInputValue, setKomentarzInputValue] = useState('');
 
-  // Handle adding a comment
   const handleAddComment = (e) => {
     setKomentarzInputValue(e.target.value);
   };
 
-  // Function to add a comment
   const addKomentarzFinalFunction = async () => {
     try {
       await addNewKomentarz(daneZbiorka.id, userInfo.user.id, komentarzInputValue);
@@ -54,7 +70,7 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
       <h1 className="text-4xl font-bold text-center text-primary mb-8">Komentarze</h1>
       
       <div className="mb-6">
-        {daneZbiorka?.status && (
+        {isCurrentUser!=null && isCurrentUser==true && daneZbiorka?.status && (
           <div className="p-6 bg-card rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-2xl font-semibold text-primary mb-4">Dodaj Nowy Komentarz</h2>
             <div className="space-y-4">
@@ -97,7 +113,6 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
             if (komentarz && daneZbiorka && komentarz.id_zbiorki === daneZbiorka.id) {
               const user = daneUzytkownik?.find((user) => user.id === komentarz.id_autora);
 
-              // Set dynamic border colors based on user and roles
               const borderColor = userInfo?.user?.id === komentarz.id_autora
                 ? 'border-yellow-500'
                 : 'border-gray-500';
@@ -107,7 +122,10 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
                   <div className="space-y-3">
                     <div>
                       <h2 className="text-xl font-semibold text-primary">{user ? `${user.imie} ${user.nazwisko}` : 'Brak autora'}</h2>
-                      <p className="text-sm text-muted-foreground">Data komentarza: {komentarz.data_utworzenia}</p>
+                      <p className="text-sm text-muted-foreground">Komentarz Opublikowany: {new Date(komentarz.data_utworzenia)
+          .toISOString()
+          .slice(0, 16)
+          .replace('T', ' ')}</p>
                     </div>
                     <div>
                       <p className="text-lg text-primary mb-4">{komentarz.tresc}</p>
@@ -117,7 +135,7 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
                         message="Czy na pewno chcesz usunąć ten komentarz?"
                         cancelText="Powrót"
                         triggerElement={<Button className="bg-danger hover:bg-danger-600 text-white">Usuń Komentarz</Button>}
-                        mutationFn={() => console.log('')} // No-op
+                        mutationFn={() => console.log('')}
                         toastError={{
                           variant: 'destructive',
                           title: 'Błąd',

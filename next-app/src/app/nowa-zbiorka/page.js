@@ -17,6 +17,7 @@ const INITIAL_STATE = {
   cel: 0,
   tryb: "prywatna",
   dataZakonczenia: "",
+  cena_na_ucznia:0,
 };
 
 export default function Page() {
@@ -68,6 +69,13 @@ export default function Page() {
             inputType="number"
             labelText="Cel"
             datafield="cel"
+            inputValue={nowaZbiorkaInput}
+            dataSetter={setNowaZbiorkaInput}
+          />
+          <InputWithLabel
+            inputType="number"
+            labelText="cena na ucznia"
+            datafield="cena_na_ucznia"
             inputValue={nowaZbiorkaInput}
             dataSetter={setNowaZbiorkaInput}
           />
@@ -132,6 +140,8 @@ async function insertNowaZbiorka(nowaZbiorkaInput, user) {
     tryb: nowaZbiorkaInput.tryb,
     data_zakonczenia: nowaZbiorkaInput.dataZakonczenia,
     id_autora: user.id,
+    status: true,
+    cena_na_ucznia:nowaZbiorkaInput.cena_na_ucznia,
   };
 
   try {

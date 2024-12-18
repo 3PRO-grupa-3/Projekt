@@ -35,7 +35,10 @@ export default function Page() {
               <Card className="bg-card hover:bg-card-hover transition-all rounded-lg">
                 <CardHeader className="bg-input text-primary-foreground rounded-t-lg p-4">
                   <CardTitle className="text-2xl font-semibold text-destructive-foreground">{zbiorka.Tytul}</CardTitle>
-                  <CardDescription className="text-destructive-foreground text-sm">{zbiorka.data_utworzenia}</CardDescription>
+                  <CardDescription className="text-destructive-foreground text-sm">{new Date(zbiorka.data_utworzenia)
+          .toISOString()
+          .slice(0, 16)
+          .replace('T', ' ')}</CardDescription>
                 </CardHeader>
                 <CardContent className="p-4">
                   <Progress
