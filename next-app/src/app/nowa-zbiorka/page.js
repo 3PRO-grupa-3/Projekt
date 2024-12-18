@@ -19,6 +19,7 @@ const INITIAL_STATE = {
   cel: 0,
   tryb: 'prywatna',
   dataZakonczenia: '',
+  cena_na_ucznia: 0,
 }
 
 export default function Page() {
@@ -78,8 +79,24 @@ export default function Page() {
             inputValue={nowaZbiorkaInput}
             dataSetter={setNowaZbiorkaInput}
           />
-
-          <TrybZbiorkiRadios nowaZbiorkaInput={nowaZbiorkaInput} handleTrybChange={handleTrybChange} />
+          <InputWithLabel
+            inputType='number'
+            labelText='cena na ucznia'
+            datafield='cena_na_ucznia'
+            inputValue={nowaZbiorkaInput}
+            dataSetter={setNowaZbiorkaInput}
+          />
+          <Label className='text-sm font-medium'>Tryb Zbiórki</Label>
+          <RadioGroup defaultValue={nowaZbiorkaInput.tryb} onValueChange={handleTrybChange}>
+            <div className='flex items-center space-x-2'>
+              <RadioGroupItem value='prywatna' id='prywatna' />
+              <Label htmlFor='prywatna'>prywatna</Label>
+            </div>
+            <div className='flex items-center space-x-2'>
+              <RadioGroupItem value='publiczna' id='publiczna' />
+              <Label htmlFor='publiczna'>publiczna</Label>
+            </div>
+          </RadioGroup>
 
           <InputWithLabel
             inputType='date'
@@ -127,6 +144,8 @@ async function insertNowaZbiorka(nowaZbiorkaInput, user) {
     tryb: nowaZbiorkaInput.tryb,
     data_zakonczenia: nowaZbiorkaInput.dataZakonczenia,
     id_autora: user.id,
+    status: true,
+    cena_na_ucznia: nowaZbiorkaInput.cena_na_ucznia,
   }
 
   try {

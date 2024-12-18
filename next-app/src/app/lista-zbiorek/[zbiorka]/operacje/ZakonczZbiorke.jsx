@@ -7,7 +7,11 @@ export default function ZakonczZbiorke({ mutation }) {
     <ConfirmationAlert
       message={'Czy napewno chcesz zakończyć zbiórkę?'}
       cancelText={'Powrót'}
-      triggerElement={<Button>Zakończ zbiórke</Button>}
+      triggerElement={
+        <Button className="bg-red-600 text-white hover:bg-red-700 px-6 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500">
+          Zakończ zbiórke
+        </Button>
+      }
       mutationFn={() => mutation.mutate('zakonczZbiorke')}
       toastError={{
         variant: 'destructive',

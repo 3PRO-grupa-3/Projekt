@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-
 import {
   Dialog,
   DialogContent,
@@ -14,7 +13,8 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@radix-ui/react-label'
 import { Input } from '@/components/ui/input'
 import { editZbiorkaFinal } from '../data-acces'
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'
+import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
 
 export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
   const [editZbiorka, setEditZbiorka] = useState({
@@ -23,128 +23,127 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
     cel: daneZbiorka.cel,
     cena_na_ucznia: daneZbiorka.cena_na_ucznia,
     typZbiorki: daneZbiorka.tryb,
-  });
+  })
 
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
-    setEditZbiorka({
-      tytul: daneZbiorka.Tytul,
-      opis: daneZbiorka.opis,
-      cel: daneZbiorka.cel,
-      cena_na_ucznia: daneZbiorka.cena_na_ucznia,
-      typZbiorki: daneZbiorka.tryb,
-    });
-  }, [daneZbiorka]);
+    try {
+      setEditZbiorka({
+        tytul: daneZbiorka.Tytul,
+        opis: daneZbiorka.opis,
+        cel: daneZbiorka.cel,
+        cena_na_ucznia: daneZbiorka.cena_na_ucznia,
+        typZbiorki: daneZbiorka.tryb,
+      })
+    } catch (error) {
+      throw new Error(error)
+    }
+  }, [daneZbiorka])
 
   const handleEditZbiorkaChange = (e, field) => {
-    if (field === 'typZbiorki') {
-      setEditZbiorka((prev) => ({
-        ...prev,
-        [field]: e,
-      }));
-    } else {
-      const { value } = e.target;
+    try {
+      const { value } = e.target
       setEditZbiorka((prev) => ({
         ...prev,
         [field]: value,
-      }));
+      }))
+    } catch (error) {
+      throw new Error(error)
     }
-  };
+  }
 
-  const handleSubmit = () => {
-    const finalZbiorka = {
-      tytul: editZbiorka.tytul || daneZbiorka.Tytul,
-      opis: editZbiorka.opis || daneZbiorka.opis,
-      cel: editZbiorka.cel || daneZbiorka.cel,
-      cena_na_ucznia: editZbiorka.cena_na_ucznia || daneZbiorka.cena_na_ucznia,
-      typZbiorki: editZbiorka.typZbiorki || daneZbiorka.tryb,
-    };
+  const handleSubmit = async () => {
+    try {
+      const finalZbiorka = {
+        tytul: editZbiorka.tytul || daneZbiorka.Tytul,
+        opis: editZbiorka.opis || daneZbiorka.opis,
+        cel: editZbiorka.cel || daneZbiorka.cel,
+        cena_na_ucznia: editZbiorka.cena_na_ucznia || daneZbiorka.cena_na_ucznia,
+        typZbiorki: editZbiorka.typZbiorki || daneZbiorka.tryb,
+      }
 
-    editZbiorkaFinal(daneZbiorka.id, finalZbiorka);
-    router.push(finalZbiorka.tytul);
-  };
+      router.push(finalZbiorka.tytul)
+      await editZbiorkaFinal(daneZbiorka.id, finalZbiorka)
+    } catch (err) {
+      throw new Error(err)
+    } finally {
+    }
+  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Edytuj Zbiórke</Button>
+        <Button className="bg-secondary hover:bg-secondary-600 text-white py-2 px-4 rounded-md">Edytuj Zbiórke</Button>
       </DialogTrigger>
-      <DialogDescription></DialogDescription>
       <DialogContent>
-        <DialogTitle>Edycja Zbiórki {daneZbiorka.Tytul}</DialogTitle>
-        <div className="grid gap-4 py-4">
+        <DialogTitle className="text-2xl font-bold text-center mb-6">Edycja Zbiórki: {daneZbiorka.Tytul}</DialogTitle>
+        <div className="grid gap-6 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="tytul" className="text-right">
-              Tytuł Zbiórki
-            </Label>
+            <Label htmlFor="tytul" className="text-right text-lg">Tytuł Zbiórki</Label>
             <Input
               placeholder={daneZbiorka.Tytul}
               type="text"
-              className="col-span-3"
+              className="col-span-3 p-3 rounded-md bg-input text-primary border border-gray-400 focus:ring-2 focus:ring-primary"
               onChange={(e) => handleEditZbiorkaChange(e, 'tytul')}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="opis" className="text-right">
-              Opis
-            </Label>
+            <Label htmlFor="opis" className="text-right text-lg">Opis</Label>
             <Input
               placeholder={daneZbiorka.opis}
               type="text"
-              className="col-span-3"
+              className="col-span-3 p-3 rounded-md bg-input text-primary border border-gray-400 focus:ring-2 focus:ring-primary"
               onChange={(e) => handleEditZbiorkaChange(e, 'opis')}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="cel" className="text-right">
-              Cel
-            </Label>
+            <Label htmlFor="cel" className="text-right text-lg">Cel</Label>
             <Input
               placeholder={daneZbiorka.cel}
               type="number"
-              className="col-span-3"
+              className="col-span-3 p-3 rounded-md bg-input text-primary border border-gray-400 focus:ring-2 focus:ring-primary"
               onChange={(e) => handleEditZbiorkaChange(e, 'cel')}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="cenanaucznia" className="text-right">
-              Cena na ucznia
-            </Label>
+            <Label htmlFor="cenanaucznia" className="text-right text-lg">Cena na ucznia</Label>
             <Input
               placeholder={daneZbiorka.cena_na_ucznia}
               type="number"
-              className="col-span-3"
+              className="col-span-3 p-3 rounded-md bg-input text-primary border border-gray-400 focus:ring-2 focus:ring-primary"
               onChange={(e) => handleEditZbiorkaChange(e, 'cena_na_ucznia')}
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="tryb" className="text-right">
-              Typ zbiórki: Publiczna/Prywatna
-            </Label>
+            <Label htmlFor="tryb" className="text-right text-lg">Typ zbiórki</Label>
             {daneZbiorka.tryb === 'publiczna' ? (
               <Button
-                onClick={() => handleEditZbiorkaChange('prywatna', 'typZbiorki')}
+                onClick={() => handleEditZbiorkaChange({ target: { value: 'prywatna' } }, 'typZbiorki')}
+                className="col-span-3 py-2 px-4 bg-secondary text-white rounded-md"
               >
-                zmień na zbiórke prywatną
+                Zmień na zbiórkę prywatną
               </Button>
             ) : (
               <Button
-                onClick={() => handleEditZbiorkaChange('publiczna', 'typZbiorki')}
+                onClick={() => handleEditZbiorkaChange({ target: { value: 'publiczna' } }, 'typZbiorki')}
+                className="col-span-3 py-2 px-4 bg-secondary text-white rounded-md"
               >
-                zmień na zbiórke publiczną
+                Zmień na zbiórkę publiczną
               </Button>
             )}
           </div>
         </div>
         <DialogFooter>
-          <DialogTrigger asChild>
-            <Button onClick={handleSubmit} type="submit">
-              Zapisz zmiany
-            </Button>
-          </DialogTrigger>
+          <Button
+            onClick={handleSubmit}
+            className="bg-secondary hover:bg-primary-600 text-white py-2 px-6 rounded-md"
+            type="submit"
+          >
+            Zapisz zmiany
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

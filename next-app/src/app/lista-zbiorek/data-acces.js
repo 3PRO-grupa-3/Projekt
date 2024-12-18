@@ -102,12 +102,12 @@ export async function deleteKomentarzFinal(komentarzId) {
   }
 }
 
-export async function potwierdzWplate(wplatyId) {
+export async function potwierdzWplate(wplatyId,typPlatnosci) {
   try {
    const data = {
     wplacono: true,
+    typ_platnosci: typPlatnosci
  };
- 
    await pocketbase.collection('wplaty').update(wplatyId,data);
  } catch (error) {
    throw new Error(error);
@@ -118,13 +118,20 @@ export async function addNewWplata(zbiorkaId,autorId,zbiorkaKwota) {
   try {
     const data = {
       wplacono: false,
-      typ_platnosci: null,
       id_zbiorki: zbiorkaId,
       id_ucznia: autorId,
       kwota: zbiorkaKwota
   };
-  
-  const record = await pb.collection('wplaty').create(data);
+  await pocketbase.collection('wplaty').create(data);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+export async function editZbiorkaAktZebr(zbiorkaID,zebranoUpdated) {
+  try {
+    const data = { aktualnie_zebrano: zebranoUpdated };
+    await pocketbase.collection('Zbiorki').update(zbiorkaID, data);
   } catch (error) {
     throw new Error(error);
   }
