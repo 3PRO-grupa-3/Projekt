@@ -94,7 +94,7 @@ export default function Menu() {
           </Link>
         )}
 
-        <ModeToggle />
+        {/* <ModeToggle /> */}
 
         {user ? (
           <ConfirmationAlert
