@@ -21,12 +21,13 @@ export default function Page() {
 
   return (
     <div className='bg-background text-foreground p-6 min-h-screen'>
+      <SpinnerLoading></SpinnerLoading>
       <h1 className='text-3xl font-bold text-primary mb-6'>Lista Zbiórek</h1>
       {publiczneZbiorki && publiczneZbiorki.length > 0 ? (
         publiczneZbiorki.map((zbiorka) => (
           <Link key={zbiorka.id} href={`lista-zbiorek/${zbiorka.Tytul}`}>
             <div
-              className={`border border-2 rounded-lg mb-6 transition-all ${
+              className={`border-2 rounded-lg mb-6 transition-all ${
                 zbiorka.status === false
                   ? 'border-destructive hover:border-destructive/70'
                   : 'border-muted hover:border-primary'

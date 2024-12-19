@@ -40,7 +40,13 @@ export default function Page() {
       {zbiorkiToDisplay?.length > 0 ? (
         zbiorkiToDisplay.map((zbiorka) => (
           <Link key={`${zbiorka.id}-${zbiorka.Tytul}`} href={`lista-zbiorek/${zbiorka.Tytul}`}>
-            <div className="border border-muted rounded-lg mb-6 hover:border-primary transition-all">
+             <div
+              className={`border-2 rounded-lg mb-6 transition-all ${
+                zbiorka.status === false
+                  ? 'border-destructive hover:border-destructive/70'
+                  : 'border-muted hover:border-primary'
+              }`}
+            >
               <Card className="bg-card hover:bg-card-hover transition-all rounded-lg">
                 <CardHeader className="bg-input text-primary-foreground rounded-t-lg p-4">
                   <CardTitle className="text-2xl font-semibold text-destructive-foreground">{zbiorka.Tytul}</CardTitle>
@@ -48,11 +54,6 @@ export default function Page() {
                             .toISOString()
                             .slice(0, 16)
                             .replace('T', ' ')}</CardDescription>
-                                {zbiorka.status === false && (
-                                  <h1 className="text-white bg-destructive text-lg font-semibold p-2 rounded-md mt-2">
-                                    Zbiórka jest zakończona
-                                  </h1>
-                                )}
                 </CardHeader>
                 <CardContent className="p-4">
                   <Progress

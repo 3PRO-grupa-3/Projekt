@@ -25,18 +25,17 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
   const [isCurrentUser, setIsCurrentUser] = useState(null)
 
   useEffect(() => {
-    try {
-      if (daneRelacje && userInfo?.user) {
-        daneRelacje.map((relacja) => {
-          if (relacja.id_zbiorki === daneZbiorka.id && relacja.id_ucznia === userInfo.user.id) {
-            setIsCurrentUser(true)
-          } else setIsCurrentUser(false)
-        })
-      }
-    } catch {
-      return <h1 className='text-destructive'>ERROR {error}</h1>
+    if (daneRelacje && daneZbiorka?.id && userInfo?.user?.id) {
+      const isMatched = daneRelacje.some(
+        (relacja) =>
+          relacja.id_zbiorki === daneZbiorka.id &&
+          relacja.id_ucznia === userInfo.user.id
+      )
+      setIsCurrentUser(isMatched)
+    } else {
+      setIsCurrentUser(false)
     }
-  }, [daneRelacje, daneZbiorka.id, userInfo?.user?.id])
+  }, [daneRelacje, daneZbiorka?.id, userInfo?.user?.id])
 
   const [komentarzInputValue, setKomentarzInputValue] = useState('')
 
@@ -76,11 +75,12 @@ export default function ListaKomentarzy({ daneZbiorka, daneUzytkownik, userInfo 
       <h1 className='text-4xl font-bold text-center text-primary mb-8'>Komentarze</h1>
 
       <div className='mb-6'>
-        {isCurrentUser != null && isCurrentUser == true && daneZbiorka?.status && (
+        {isCurrentUser && daneZbiorka?.status && (
           <div className='p-6 bg-card rounded-lg shadow-lg border border-gray-300'>
             <h2 className='text-2xl font-semibold text-primary mb-4'>Dodaj Nowy Komentarz</h2>
             <div className='space-y-4'>
               <div>
+              {console.log(isCurrentUser)}
                 <Label htmlFor='komentarzInput' className='block text-lg'>
                   Twój Komentarz:
                 </Label>

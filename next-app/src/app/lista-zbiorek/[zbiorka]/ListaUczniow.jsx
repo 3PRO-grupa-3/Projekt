@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { addNewWplata, editZbiorkaAktZebr, fetchWplaty, potwierdzWplate } from '../data-acces';
+import { addNewWplata, deleteUserFromZbiorka, deleteUserFromZbiorkaFinal, editZbiorkaAktZebr, fetchWplaty, potwierdzWplate } from '../data-acces';
 import { Button } from '@/components/ui/button';
 import ConfirmationAlert from '@/lib/basicComponents/ConfirmationAlert';
 import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading';
@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 
-export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, userInfo }) {
-  const { data: daneWplaty, isLoading, error } = useQuery({
+export default function ListaUczniow({ daneUczen,refetchUczniowie, daneZbiorka, daneUzytkownik, userInfo }) {
+  const { data: daneWplaty, isLoading, isError } = useQuery({
     queryKey: ['wplaty'],
     queryFn: fetchWplaty,
   });
@@ -62,18 +62,28 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
     }
   };
 
+  const deleteUserFromZbiorka = async (id) => {
+      try {
+        await deleteUserFromZbiorkaFinal(id)
+        refetchUczniowie()
+      } catch (error) {
+        return <h1 className='text-destructive'>ERROR przy usuwaniu komentarza: {error}</h1>
+      }
+    }
+
   if (isLoading) {
     return <SpinnerLoading />;
   }
 
-  if (error) {
-    return <h1 className='text-destructive'>ERROR {error}</h1>
+  if (isError) {
+    return <h1 className='text-destructive'>ERROR {isError}</h1>
   }
 
   return (
     <div className="bg-background text-foreground p-6">
       <h1 className="text-3xl font-semibold text-primary mb-6">Uczniowie</h1>
       {daneUczen[0] != null ? (
+        
         daneUczen?.map((tenUczen) => {
           if (tenUczen?.id_zbiorki === daneZbiorka?.id) {
             const user = daneUzytkownik?.find((u) => u.id === tenUczen.id_ucznia);
@@ -169,6 +179,27 @@ export default function ListaUczniow({ daneUczen, daneZbiorka, daneUzytkownik, u
   ) : (
     <p className="text-red-500">Status Płatności: Nie zapłacono</p>
   )}
+                       {(userInfo?.user?.rola === 'admin') && (
+                        <ConfirmationAlert
+                          message='Czy na pewno chcesz usunąć tego użytkownika?'
+                          description={'Tej akcji nie da się cofnąć'}
+                          cancelText='Powrót'
+                          triggerElement={
+                            <Button className='bg-destructive hover:bg-danger-600 text-white'>Usuń Użytkownika</Button>
+                          }
+                          mutationFn={() => console.log('')}
+                          toastError={{
+                            variant: 'destructive',
+                            title: 'Błąd',
+                            description: 'Nie udało się wykonać polecenia.',
+                          }}
+                          toastSucces={{
+                            title: 'Użytkownik usunięty',
+                            description: 'Użytkownik został pomyślnie usunięty.',
+                          }}
+                          onSuccesCustomFunc={() => deleteUserFromZbiorka(tenUczen.id)}
+                        />
+                      )}
 </CardContent>
 
               </Card>

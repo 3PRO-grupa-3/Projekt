@@ -18,29 +18,29 @@ import {
 import { addNewProblem, fetchUczen } from '../data-acces'
 import { useQuery } from '@tanstack/react-query'
 
-export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
+export default function ActionButtons({ mutation, userInfo, daneZbiorka, refetchEdycja }) {
   const [problemInputValue, setProblemInputValue] = useState('');
-
+    const [open, setOpen] = useState(false);
+  
   const { data: daneRelacje} = useQuery({
     queryKey: ['kluucz'],
     queryFn: fetchUczen,
   });
   const [isCurrentUser,setIsCurrentUser] = useState(null)
+
   useEffect(() => {
-    try{
-    if (daneRelacje && userInfo?.user) {
-      daneRelacje.map((relacja) => {
-        if (
-          relacja.id_zbiorki === daneZbiorka.id &&
-          relacja.id_ucznia === userInfo.user.id
-        ) {
-          setIsCurrentUser(true)
-        }else(setIsCurrentUser(false))
-      });
-    }}catch(error){
-      return <h1 className='text-destructive'>ERROR {error}</h1>
-    }
-  }, [daneRelacje, daneZbiorka.id, userInfo?.user?.id]);
+      if (daneRelacje && daneZbiorka?.id && userInfo?.user?.id) {
+        const isMatched = daneRelacje.some(
+          (relacja) =>
+            relacja.id_zbiorki === daneZbiorka.id &&
+            relacja.id_ucznia === userInfo.user.id
+        )
+        setIsCurrentUser(isMatched)
+      } else {
+        setIsCurrentUser(false)
+      }
+    }, [daneRelacje, daneZbiorka?.id, userInfo?.user?.id])
+
   
 
   const handleGetProblemInfo = (e) => {
@@ -54,6 +54,7 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
   const problemFinalFunction = async () => {
     try {
       await addNewProblem(daneZbiorka.id, userInfo.user.id, problemInputValue);
+      setOpen(false);
     } catch (error) {
       return <h1 className='text-destructive'>ERROR podczas dodawania problemu: {error}</h1>
     }
@@ -61,8 +62,8 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
 
   return (
     <div id="action-buttons" className="space-y-6">
-      {isCurrentUser==true && userInfo?.user?.rola === 'uczen' && daneZbiorka?.status && (
-        <Dialog>
+      {isCurrentUser && userInfo?.user?.rola === 'uczen' && daneZbiorka?.status && (
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
@@ -85,7 +86,7 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
             </div>
             <DialogFooter className="flex justify-between items-center mt-4 space-x-2">
               <DialogTrigger asChild>
-                {/* <ConfirmationAlert
+                <ConfirmationAlert
                   message={"Czy napewno chcesz dodać ten problem?"}
                   cancelText={"Powrót"}
                   triggerElement={
@@ -103,9 +104,8 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
                     title: "Udało się zgłosić problem",
                   }}
                   onSuccesCustomFunc={problemFinalFunction}
-                /> */}
-                <Button onClick={problemFinalFunction} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200">
-                  Submit</Button>
+                />
+                
 
               </DialogTrigger>
             </DialogFooter>
@@ -116,7 +116,7 @@ export default function ActionButtons({ mutation, userInfo, daneZbiorka }) {
       {userInfo?.user?.rola === "admin" && daneZbiorka?.status ? (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <EdycjaZbiorki daneZbiorka={daneZbiorka} />
+            <EdycjaZbiorki daneZbiorka={daneZbiorka} refetchEdycja={refetchEdycja} />
             <ZakonczZbiorke mutation={mutation} />
             {/* <Przypomnij mutation={mutation} /> */}
           </div>

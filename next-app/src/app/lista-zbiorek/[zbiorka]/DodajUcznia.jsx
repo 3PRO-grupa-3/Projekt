@@ -13,7 +13,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { addUczenToZbiorkaFinal, fetchUczen, fetchUsers } from "../data-acces";
 import { cn } from "@/lib/utils";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 import ConfirmationAlert from "@/lib/basicComponents/ConfirmationAlert";
 import SpinnerLoading from "@/lib/basicComponents/SpinnerLoading";
 
@@ -22,22 +22,22 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
   const [usersNotInZbiorka, setUsersNotInZbiorka] = useState(null);
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [isLoadingAddStudent, setIsLoadingAddStudent] = useState(false); // Track loading for adding student
+  const [isLoadingAddStudent, setIsLoadingAddStudent] = useState(false);
 
-  const { data: users, refetch, isLoading: isLoadingUsers, error: errorUSers } = useQuery({
+  const { data: users, refetch, isLoading: isLoadingUsers, error: errorUsers } = useQuery({
     queryKey: ["users"],
     queryFn: fetchUsers,
   });
 
-  const { data: relacjeZbiorka, isLoading: isLoadingURelacje, error: errorRelacje } = useQuery({
+  const { data: relacjeZbiorka, isLoading: isLoadingRelacje, error: errorRelacje } = useQuery({
     queryKey: ["uzytkownicyRelacje"],
     queryFn: fetchUczen,
   });
 
   useEffect(() => {
-    try {
-      if (!users || !relacjeZbiorka || !daneZbiorka) return;
+    if (!users || !relacjeZbiorka || !daneZbiorka) return;
 
+    try {
       const allUsersIds = users.map((user) => user.id);
 
       const allIdInZbiorka = relacjeZbiorka
@@ -51,28 +51,26 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
       const filteredUsers = users.filter((user) =>
         allUsersNotInZbiorka.includes(user.id)
       );
+
       const finalUsers = filteredUsers.filter((user) => user.rola === "uczen");
 
       setUsersNotInZbiorka(finalUsers);
     } catch (error) {
-      return <h1 className='text-destructive'>ERROR {error}</h1>
+      console.error("Error filtering users:", error);
     }
   }, [users, relacjeZbiorka, daneZbiorka]);
 
-  if (isLoadingUsers || isLoadingURelacje) {
+  if (isLoadingUsers || isLoadingRelacje) {
     return <SpinnerLoading />;
   }
 
-  if (errorRelacje || errorUSers) {
-    return <h1 className='text-destructive'>ERROR {error}</h1>
+  if (errorRelacje || errorUsers) {
+    return <h1 className="text-destructive">ERROR</h1>;
   }
 
   const handleSelect = (user) => {
-    try {
-      setSelectedUser(user);
-    } catch (error) {
-      return <h1 className='text-destructive'>ERROR {error}</h1>
-    }
+    setSelectedUser(user);
+    console.log("User selected:", user);
   };
 
   const handleAddStudent = async () => {
@@ -82,12 +80,12 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
         await addUczenToZbiorkaFinal(daneZbiorka.id, selectedUser.id);
 
         onStudentAdded();
-
         setOpen(false);
+        setSelectedUser(null);
         await queryClient.invalidateQueries("uzytkownicyRelacje");
         await refetch();
       } catch (error) {
-        return <h1 className='text-destructive'>ERROR podczas dodawania ucznia: {error}</h1>
+        console.error("Error adding student:", error);
       } finally {
         setIsLoadingAddStudent(false);
       }
@@ -112,14 +110,17 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
         </PopoverTrigger>
         <PopoverContent className="w-[250px] p-0 bg-white border rounded-lg shadow-md">
           <Command>
-            <CommandInput placeholder="Wyszukaj ucznia..." className="p-2 border-b border-gray-300" />
+            <CommandInput
+              placeholder="Wyszukaj ucznia..."
+              className="p-2 border-b border-gray-300"
+            />
             <CommandList>
               <CommandEmpty>Nie znaleziono ucznia</CommandEmpty>
               <CommandGroup>
-                {usersNotInZbiorka != null && usersNotInZbiorka.map((user) => (
+                {usersNotInZbiorka?.map((user) => (
                   <CommandItem
                     key={user.id}
-                    value={`${user.imie} ${user.nazwisko}`}
+                    value={`${user.imie}`}
                     onSelect={() => handleSelect(user)}
                     className="p-2 hover:bg-gray-200 cursor-pointer"
                   >
@@ -127,7 +128,7 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
                     <Check
                       className={cn(
                         "ml-auto",
-                        selectedUser === user ? "opacity-100" : "opacity-0"
+                        selectedUser?.id === user.id ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
@@ -139,9 +140,9 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
       </Popover>
 
       <ConfirmationAlert
-        message={"Czy na pewno chcesz dodać tego ucznia do zbiórki?"}
-        description={'Tej akcji nie da się cofnąć'}
-        cancelText={"Powrót"}
+        message="Czy na pewno chcesz dodać tego ucznia do zbiórki?"
+        description="Tej akcji nie da się cofnąć"
+        cancelText="Powrót"
         triggerElement={
           <Button
             className="bg-secondary hover:bg-secondary-600 text-white py-2 px-4 rounded-md"
@@ -150,7 +151,6 @@ export default function DodajUczniaLista({ daneZbiorka, onStudentAdded }) {
             {isLoadingAddStudent ? <SpinnerLoading /> : "Dodaj Ucznia"}
           </Button>
         }
-        
         mutationFn={() => console.log("")}
         toastError={{
           variant: "destructive",

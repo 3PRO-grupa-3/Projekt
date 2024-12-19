@@ -16,12 +16,12 @@ export default function Page({ params }) {
   const zbiorkaParamsDecoded =  decodeURIComponent(zbiorkaParamsBeforeDecode.zbiorka)
   const userInfo = useUser()
  
-  const { data: daneZbiorka, isLoading: isLoadingZbiorka, error: errorZbiorka, refetch } = useQuery({
+  const { data: daneZbiorka, isLoading: isLoadingZbiorka, error: errorZbiorka, refetch: refetchEdycja } = useQuery({
     queryKey: ['zbiorka', zbiorkaParamsDecoded],
     queryFn: () => fetchZbiorkaByTitle(zbiorkaParamsDecoded),
   });
 
-  const { data: daneUczen, isLoading: isLoadingUczniowie, error: errorUczniowie } = useQuery({
+  const { data: daneUczen, isLoading: isLoadingUczniowie, error: errorUczniowie, refetch: refetchUczniowie } = useQuery({
     queryKey: ['uczniowie'],
     queryFn: fetchUczen,
   });
@@ -34,7 +34,7 @@ export default function Page({ params }) {
   const zakonczZbiorke = async () => {
     try {
       await zakonczZbiorkeFinal(daneZbiorka.id, daneZbiorka.Tytul);
-      refetch();
+      refetchEdycja();
     } catch (error) {
       return <h1 className='text-destructive'>ERROR: przy zakończeniu zbiórki</h1>
     }
@@ -112,7 +112,7 @@ export default function Page({ params }) {
                   <span className="font-semibold">Akutalnie zebrano:</span> {((daneZbiorka.aktualnie_zebrano / daneZbiorka.cel) * 100).toFixed(2)}%
                 </p>
                 <div className="mt-2">
-                  <Progress value={(daneZbiorka.aktualnie_zebrano / daneZbiorka.cel) * 100} className="h-2 rounded-full" />
+                  <Progress value={(daneZbiorka.aktualnie_zebrano / daneZbiorka.cel) * 100} />
                 </div>
               </div>
             </div>
@@ -122,12 +122,10 @@ export default function Page({ params }) {
         <h1 className="text-xl text-muted-foreground">Nie ma danych o zbiórce</h1>
       )}
 
-      <ActionButtons mutation={mutation} userInfo={userInfo} daneZbiorka={daneZbiorka} />
+      <ActionButtons mutation={mutation} userInfo={userInfo} daneZbiorka={daneZbiorka} refetchEdycja={refetchEdycja} />
 
-      {/* Uczniowie Table */}
-      <ListaUczniow daneUczen={daneUczen} daneZbiorka={daneZbiorka} daneUzytkownik={daneUzytkownik} userInfo={userInfo} />
+      <ListaUczniow daneUczen={daneUczen} refetchUczniowie={refetchUczniowie} daneZbiorka={daneZbiorka} daneUzytkownik={daneUzytkownik} userInfo={userInfo} />
 
-      {/* Komentarze Table */}
       <ListaKomentarzy daneZbiorka={daneZbiorka} daneUzytkownik={daneUzytkownik} userInfo={userInfo} />
     </div>
   )

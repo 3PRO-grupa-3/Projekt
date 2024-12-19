@@ -1,31 +1,23 @@
-import React, { useEffect, useState } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import React, { useEffect, useState } from 'react';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@radix-ui/react-label';
+import { Input } from '@/components/ui/input';
+import { editZbiorkaFinal } from '../data-acces';
+import { useRouter } from 'next/navigation';
+import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading';
 
-import { Button } from '@/components/ui/button'
-import { Label } from '@radix-ui/react-label'
-import { Input } from '@/components/ui/input'
-import { editZbiorkaFinal } from '../data-acces'
-import { useRouter } from 'next/navigation'
-import SpinnerLoading from '@/lib/basicComponents/SpinnerLoading'
-
-export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
+export default function EdycjaZbiorki({ daneZbiorka, refetchEdycja, mutation }) {
   const [editZbiorka, setEditZbiorka] = useState({
     tytul: daneZbiorka.Tytul,
     opis: daneZbiorka.opis,
     cel: daneZbiorka.cel,
     cena_na_ucznia: daneZbiorka.cena_na_ucznia,
     typZbiorki: daneZbiorka.tryb,
-  })
+  });
+  const [open, setOpen] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     try {
@@ -35,23 +27,23 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
         cel: daneZbiorka.cel,
         cena_na_ucznia: daneZbiorka.cena_na_ucznia,
         typZbiorki: daneZbiorka.tryb,
-      })
+      });
     } catch (error) {
-      return <h1 className='text-destructive'>ERROR {error}</h1>
+      return <h1 className="text-destructive">ERROR {error}</h1>;
     }
-  }, [daneZbiorka])
+  }, [daneZbiorka]);
 
   const handleEditZbiorkaChange = (e, field) => {
     try {
-      const { value } = e.target
+      const { value } = e.target;
       setEditZbiorka((prev) => ({
         ...prev,
         [field]: value,
-      }))
+      }));
     } catch (error) {
-      return <h1 className='text-destructive'>ERROR przy zapisywaniu danych wpisanych: {error}</h1>
+      return <h1 className="text-destructive">ERROR przy zapisywaniu danych wpisanych: {error}</h1>;
     }
-  }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -61,17 +53,24 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
         cel: editZbiorka.cel || daneZbiorka.cel,
         cena_na_ucznia: editZbiorka.cena_na_ucznia || daneZbiorka.cena_na_ucznia,
         typZbiorki: editZbiorka.typZbiorki || daneZbiorka.tryb,
-      }
+      };
 
-      router.push(finalZbiorka.tytul)
-      await editZbiorkaFinal(daneZbiorka.id, finalZbiorka)
+      await editZbiorkaFinal(daneZbiorka.id, finalZbiorka);
+
+      setOpen(false);
+
+      if (daneZbiorka.Tytul != editZbiorka.tytul) {
+        router.push(finalZbiorka.tytul);
+      } else {
+        refetchEdycja();
+      }
     } catch (error) {
-      return <h1 className='text-destructive'>ERROR podczas aktualizowania danych zbiórki: {error}</h1>
+      return <h1 className="text-destructive">ERROR podczas aktualizowania danych zbiórki: {error}</h1>;
     }
-  }
+  };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="bg-secondary hover:bg-secondary-600 text-white py-2 px-4 rounded-md">Edytuj Zbiórke</Button>
       </DialogTrigger>
@@ -145,8 +144,7 @@ export default function EdycjaZbiorki({ daneZbiorka, mutation }) {
             </div>
           </Button>
         </DialogFooter>
-
       </DialogContent>
     </Dialog>
-  )
+  );
 }
